@@ -1,0 +1,65 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FloatingWhatsApp from '../components/FloatingWhatsApp.astro';
+import '../styles/global.css';
+import '../styles/nav.css';
+import '../styles/scroll-motion.css';
+import '../styles/transitions.css';
+import '@mm/brand/tokens.css';
+import { centralTel } from '../content/data';
+import outfitFont from '@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?url';
+
+interface Props {
+  title: string;
+  description: string;
+  page: string;
+  ogImage?: string;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+}
+const { title, description, page, ogImage = '/media/og-default.webp', schema } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
+const imageUrl = new URL(ogImage, Astro.site ?? Astro.url.origin).toString();
+const organization = { '@context': 'https://schema.org', '@type': 'Organization', name: 'Farmacia MundoMagistral S.R.L.', url: new URL('/', Astro.site ?? Astro.url.origin).toString(), telephone: centralTel };
+---
+<!doctype html>
+<html lang="es-BO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0B1020" />
+    <link rel="preload" href={outfitFont} as="font" type="font/woff2" crossorigin />
+    <title>{title} | MundoMagistral</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_BO" />
+    <meta property="og:site_name" content="MundoMagistral" />
+    <meta property="og:title" content={`${title} | MundoMagistral`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} | MundoMagistral`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <ClientRouter />
+    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+  </head>
+  <body data-page={page}>
+    <a class="skip-link" href="#main">Ir al contenido</a>
+    <a class="skip-link skip-quote" href="/cotizar">Ir a cotizar receta</a>
+    <div class="stage-backdrop" aria-hidden="true">
+      <img id="stage-poster" src="/media/poster-hero.avif" width="1080" height="1080" alt="" fetchpriority="high" transition:persist="poster" />
+      <canvas id="stage" transition:persist="stage" aria-hidden="true"></canvas>
+    </div>
+    <Header />
+    <main id="main"><slot /></main>
+    <Footer />
+    <FloatingWhatsApp />
+    <script>import '../scripts/lifecycle.ts'; import '../scripts/transitions.ts';</script>
+  </body>
+</html>

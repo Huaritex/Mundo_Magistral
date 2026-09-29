@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import { formas } from '../content/data';
+import formsClient from '../components/forms-client.js?url';
+// PROPUESTO: encabezados e indicaciones de navegación. Nombres de formas importados son VERIFICADOS.
+---
+<Base page="formas" title="Formas farmacéuticas" description="Cápsulas, cremas, geles, soluciones, supositorios, óvulos, jarabes, colirios y otras formas farmacéuticas en MundoMagistral." ogImage="/media/og/formas.webp">
+  <section class="page-hero dark" data-chapter="formas"><div class="container"><p class="section-kicker">Formulación magistral</p><h1>Formas farmacéuticas</h1><p>La forma del preparado se define a partir de la prescripción médica y las necesidades de cada paciente.</p></div></section>
+  <section class="section white" data-chapter="formas"><div class="container"><div class="section-head"><div><p class="section-kicker">Catálogo de formas</p><h2>Distintas formas.<br />Una misma atención.</h2></div><p>El sitio original enumera cápsulas, cremas, geles, soluciones, supositorios, óvulos, jarabes y colirios; también presenta jabones en sus productos.</p></div><div class="forms-tabs" role="group" aria-label="Elegir forma farmacéutica">{formas.map((forma, index) => <button class:list={["form-tab", { active: index === 0 }]} type="button" data-forma={forma.figura} data-imagen={'imagen' in forma ? forma.imagen : undefined} aria-pressed={index === 0}>{forma.nombre}</button>)}</div><div class="form-display" aria-live="polite"><div class="form-illustration" aria-hidden="true"><span class="form-illustration-core"></span></div><div><p class="section-kicker">Según prescripción médica</p><h3 id="selected-form">Cápsulas</h3><p>Consulta si esta forma corresponde a la receta indicada por tu profesional de salud.</p><a class="button button-primary" href="/cotizar">Cotizar con mi receta</a></div><img id="form-product" class="form-product" width="900" height="166" alt="" loading="lazy" decoding="async" hidden /></div></div></section>
+  <script type="module" src={formsClient}></script>
+</Base>

@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { verifiedCopy } from '../content/data';
+import missionIcon from '../../../../assets/icons/mision-05.svg?url';
+import visionIcon from '../../../../assets/icons/vision-05.svg?url';
+import philosophyIcon from '../../../../assets/icons/filosofia-05.svg?url';
+// PROPUESTO: titulares y transiciones narrativas. La historia, misión, visión y filosofía importadas son VERIFICADAS.
+---
+<Base page="nosotros" title="Nosotros: historia y filosofía" description="Conoce la historia de MundoMagistral desde 2019, nuestra misión, visión y filosofía de formulación magistral en Bolivia." ogImage="/media/og/nosotros.webp">
+  <section class="page-hero dark" data-chapter="historia"><div class="container"><p class="section-kicker">Desde el 18 de octubre de 2019</p><h1>Una idea hecha para cada persona.</h1><p>{verifiedCopy.history}</p></div></section>
+  <section class="section white" data-chapter="historia"><div class="container split"><div><p class="section-kicker">Nuestra historia</p><h2>2019: el comienzo.</h2></div><div class="prose"><p>Farmacia MundoMagistral S.R.L. fue creada el 18 de octubre de 2019 con el propósito de brindar soluciones personalizadas y efectivas a cada paciente.</p><p>Desde entonces, trabajamos para acompañar al profesional médico en Bolivia, ofreciendo asesoramiento técnico continuo.</p><div class="value-words"><span>Confianza</span><span>Calidad</span><span>Accesibilidad</span></div></div></div></section>
+  <section class="section light" data-chapter="mision"><div class="container split"><div class="icon-heading"><img class="brand-icon" src={missionIcon} width="90" height="90" alt="" loading="lazy" /><p class="section-kicker">Misión</p><h2>Responder a una necesidad concreta.</h2></div><p class="prose">{verifiedCopy.mission}</p></div></section>
+  <section class="section white" data-chapter="vision"><div class="container split"><div class="icon-heading"><img class="brand-icon" src={visionIcon} width="90" height="90" alt="" loading="lazy" /><p class="section-kicker">Visión</p><h2>Ser referentes de confianza.</h2></div><p class="prose">{verifiedCopy.vision}</p></div></section>
+  <section class="section dark manifesto" data-chapter="filosofia"><div class="container"><img class="brand-icon" src={philosophyIcon} width="90" height="90" alt="" loading="lazy" /><p class="section-kicker">Filosofía</p><h2>Cada fórmula es única, como cada paciente.</h2><p>Trabajamos con rigor científico, empatía y compromiso, asegurando que cada preparación magistral sea un reflejo de nuestra dedicación y responsabilidad.</p><div class="manifesto-values"><span>Rigor científico</span><span>Empatía</span><span>Compromiso</span></div><a class="button button-teal" href="/cotizar">Cotizar receta</a></div></section>
+</Base>

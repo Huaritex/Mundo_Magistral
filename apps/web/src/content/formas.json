@@ -1,0 +1,11 @@
+[
+  {"id":"capsulas","nombre":"Cápsulas","figura":"capsula","fuente":"VERIFICADO"},
+  {"id":"cremas","nombre":"Cremas","figura":"crema","imagen":"/media/formas/cremas.webp","fuente":"VERIFICADO"},
+  {"id":"geles","nombre":"Geles","figura":"crema","fuente":"VERIFICADO"},
+  {"id":"soluciones","nombre":"Soluciones","figura":"gotero","fuente":"VERIFICADO"},
+  {"id":"supositorios","nombre":"Supositorios","figura":"ovulo","fuente":"VERIFICADO"},
+  {"id":"ovulos","nombre":"Óvulos","figura":"ovulo","imagen":"/media/formas/ovulos.webp","fuente":"VERIFICADO"},
+  {"id":"jarabes","nombre":"Jarabes","figura":"gotero","fuente":"VERIFICADO"},
+  {"id":"colirios","nombre":"Colirios","figura":"gotero","fuente":"VERIFICADO"},
+  {"id":"jabones","nombre":"Jabones","figura":"jabon","imagen":"/media/formas/jabones.webp","fuente":"VERIFICADO (banner de producto)"}
+]

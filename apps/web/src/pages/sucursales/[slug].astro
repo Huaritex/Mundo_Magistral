@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import { sedes, centralTel } from '../../content/data';
+// PROPUESTO: encabezados e indicaciones. Dirección, teléfono y horario de sede importados son VERIFICADOS.
+export function getStaticPaths() { return sedes.map((sede) => ({ params: { slug: sede.id }, props: { sede } })); }
+const { sede } = Astro.props;
+const others = sedes.filter((entry) => entry.id !== sede.id).slice(0, 3);
+const pharmacySchema = {
+  '@context': 'https://schema.org', '@type': 'Pharmacy',
+  name: `Farmacia MundoMagistral — ${sede.ciudad} ${sede.nombre}`,
+  address: { '@type': 'PostalAddress', streetAddress: sede.direccion, addressLocality: sede.ciudad, addressRegion: sede.departamento, addressCountry: 'BO' },
+  telephone: sede.tel,
+  openingHoursSpecification: [
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: sede.lv.split('–')[0], closes: sede.lv.split('–')[1] },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Saturday', opens: sede.sab.split('–')[0], closes: sede.sab.split('–')[1] },
+  ],
+  parentOrganization: { '@type': 'Organization', name: 'Farmacia MundoMagistral S.R.L.', telephone: centralTel },
+};
+const schema = [pharmacySchema, {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL('/', Astro.site ?? Astro.url.origin).toString() },
+    { '@type': 'ListItem', position: 2, name: 'Sucursales', item: new URL('/sucursales', Astro.site ?? Astro.url.origin).toString() },
+    { '@type': 'ListItem', position: 3, name: `${sede.ciudad} ${sede.nombre}`, item: Astro.url.toString() },
+  ],
+}];
+---
+<Base page="sedes" title={`Farmacia magistral en ${sede.ciudad} — ${sede.nombre}`} description={`Visita MundoMagistral en ${sede.ciudad}: ${sede.direccion}. Teléfono ${sede.telefono}. Horarios de atención y cotización de recetas.`} schema={schema} ogImage={`/media/og/sede-${sede.id}.webp`}>
+  <section class="page-hero dark" data-chapter="sedes"><div class="container"><nav class="breadcrumbs" aria-label="Ruta de navegación"><a href="/">Inicio</a><span>/</span><a href="/sucursales">Sucursales</a><span>/</span><span aria-current="page">{sede.ciudad}</span></nav><p class="section-kicker">{sede.departamento}</p><h1>{sede.ciudad}<small>{sede.nombre !== sede.ciudad ? sede.nombre : ''}</small></h1><p>Atención en nuestra sede de {sede.ciudad}.</p></div></section>
+  <section class="section white" data-chapter="sedes"><div class="container sede-detail"><div><p class="section-kicker">Visítanos</p><h2>Dirección y atención.</h2><address>{sede.direccion}</address><a class="sede-phone" href={`tel:${sede.tel}`}>{sede.telefono}</a><div class="hero-actions"><a class="button button-primary" href={`/cotizar?sede=${sede.id}`}>Cotizar en esta sede</a><a class="button button-outline-dark" href={`tel:${sede.tel}`}>Llamar</a></div></div><div class="hours-panel"><h3>Horarios</h3><div><span>Lunes a viernes</span><strong>{sede.lv}</strong></div><div><span>Sábados</span><strong>{sede.sab}</strong></div>{sede.email && <a href={`mailto:${sede.email}`}>{sede.email}</a>}<p>La ubicación exacta para navegación se agregará cuando la sede confirme sus coordenadas.</p></div></div></section>
+  <section class="section light"><div class="container"><div class="section-head"><h2>Otras sedes.</h2><a class="text-link" href="/sucursales">Ver el directorio</a></div><div class="related-specialties">{others.map((other) => <a href={`/sucursales/${other.id}`}>{other.ciudad} <span aria-hidden="true">↗</span></a>)}</div></div></section>
+</Base>

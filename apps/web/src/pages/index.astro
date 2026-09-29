@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import SedeCard from '../components/SedeCard.astro';
+import SpecialtyCard from '../components/SpecialtyCard.astro';
+import { centralWhatsapp, especialidades, sedes, verifiedCopy } from '../content/data';
+// PROPUESTO: titulares, textos de proceso e instrucciones de interfaz; verifiedCopy y nombres/datos importados son VERIFICADOS.
+---
+<Base page="home" title="Preparados magistrales en Bolivia" description="Farmacia MundoMagistral: preparados magistrales personalizados según prescripción médica. Conoce nuestras 8 sedes en Bolivia y cotiza tu receta." ogImage="/media/og/home.webp">
+  <section class="home-hero dark" data-chapter="hero">
+    <video class="hero-loop" data-hero-loop muted loop playsinline preload="none" poster="/media/poster-hero.avif" aria-hidden="true"></video>
+    <div class="container home-hero-content">
+      <div class="home-hero-copy">
+        <p class="hero-line">Al servicio de la medicina personalizada</p>
+        <!-- PROPUESTO: titular editorial; requiere aprobación antes de publicación. -->
+        <h1>Del mundo<br />a tu fórmula.</h1>
+        <p>{verifiedCopy.welcome}</p>
+        <div class="hero-actions">
+          <a class="button button-teal" href="/cotizar">Cotizar receta <span aria-hidden="true">↗</span></a>
+          <a class="button button-outline-light" href={centralWhatsapp} target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a>
+        </div>
+        <div class="hero-paths"><a href="#que-es">Soy paciente</a><a href="/medicos">Soy médico</a></div>
+      </div>
+      <div class="home-hero-figure" aria-hidden="true"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="planet"></span><span class="figure-caption">Cada fórmula es única, como cada paciente.</span></div>
+    </div>
+    <a class="scroll-prompt" href="#que-es">Explora nuestra historia <span aria-hidden="true">↓</span></a>
+  </section>
+
+  <section id="que-es" class="section section-question dark" data-chapter="que-es" data-pin>
+    <div class="container split">
+      <div><p class="section-kicker">Una fórmula para una persona</p><h2>¿Qué es una farmacia magistral?</h2></div>
+      <div class="prose question-answer"><p>{verifiedCopy.what}.</p><a class="text-link" href="/preguntas-frecuentes">Ver preguntas frecuentes</a></div>
+    </div>
+  </section>
+
+  <section class="section section-world dark" data-chapter="mundo">
+    <div class="container">
+      <p class="section-kicker">En Bolivia, desde 2019</p>
+      <h2>Una mirada amplia.<br />Una atención cercana.</h2>
+      <div class="world-facts"><div><strong>2019</strong><span>Fundación</span></div><div><strong>7</strong><span>Departamentos</span></div><div><strong>8</strong><span>Sedes</span></div><div><strong>8</strong><span>Especialidades</span></div></div>
+    </div>
+  </section>
+
+  <section class="section process-section dark" data-chapter="mortero" data-pin>
+    <div class="container">
+      <div class="section-head"><div><p class="section-kicker">Del mundo a tu fórmula</p><h2>Tu receta inicia el camino.</h2></div><p>Una preparación magistral comienza con una prescripción para las necesidades de una persona.</p></div>
+      <!-- PROPUESTO: secuencia de servicio sujeta a validación operativa y técnica. -->
+      <ol class="process-list"><li><span>01</span><h3>Tu médico prescribe</h3><p>La receta indica la formulación para tu caso.</p></li><li><span>02</span><h3>Preparamos tu fórmula</h3><p>Revisamos la solicitud y elaboramos el preparado magistral.</p></li><li><span>03</span><h3>La recibes</h3><p>Coordinamos contigo la atención en la sede correspondiente.</p></li></ol>
+    </div>
+  </section>
+
+  <section class="section manifesto dark" data-chapter="filosofia" data-pin>
+    <div class="container"><p class="section-kicker">Nuestra filosofía</p><p class="manifesto-main">Cada fórmula es única, como cada paciente.</p><div class="manifesto-values"><span>Rigor científico</span><span>Empatía</span><span>Compromiso</span></div><p>Trabajamos con rigor científico, empatía y compromiso, asegurando que cada preparación magistral sea un reflejo de nuestra dedicación y responsabilidad.</p><a class="text-link" href="/nosotros">Conoce MundoMagistral</a></div>
+  </section>
+
+  <section class="section light" data-chapter="especialidades">
+    <div class="container"><div class="section-head"><div><p class="section-kicker">Especialidades</p><h2>Ocho campos.<br />Una atención personal.</h2></div><a class="text-link" href="/especialidades">Ver todas las especialidades</a></div><div class="specialty-grid">{especialidades.map((item, index) => <SpecialtyCard item={item} index={index} />)}</div></div>
+  </section>
+
+  <section class="section forms-preview white" data-chapter="formas">
+    <div class="container split"><div><p class="section-kicker">Formas farmacéuticas</p><h2>La forma también importa.</h2><p>Entre nuestras formas farmacéuticas se encuentran cápsulas, cremas, geles, soluciones, supositorios, óvulos, jarabes y colirios.</p><a class="button button-primary" href="/formas-farmaceuticas">Explorar formas</a></div><div class="forms-orbit" aria-hidden="true"><span class="forms-core"></span><span class="form-pill">Cápsulas</span><span class="form-pill">Cremas</span><span class="form-pill">Óvulos</span></div></div>
+  </section>
+
+  <section class="section light" data-chapter="sedes">
+    <div class="container"><div class="section-head"><div><p class="section-kicker">Sucursales</p><h2>Tu sede, más cerca.</h2></div><a class="text-link" href="/sucursales">Directorio completo</a></div><div class="sede-grid sede-preview">{sedes.slice(0, 4).map((sede, index) => <SedeCard sede={sede} index={index} />)}</div></div>
+  </section>
+
+  <section class="section doctor-preview white" data-chapter="medicos"><div class="container split"><div><p class="section-kicker">Para profesionales médicos</p><h2>Un aliado para cada prescripción.</h2></div><div><p>Desde 2019 buscamos acompañar al profesional médico en Bolivia, ofreciendo asesoramiento técnico continuo.</p><a class="button button-primary" href="/medicos">Conocer el espacio médico</a></div></div></section>
+
+  <section class="section final-cta dark" data-chapter="cta"><div class="container"><p class="section-kicker">Tu fórmula comienza aquí</p><h2>¿Tienes una receta?</h2><p>Envíala para solicitar una cotización.</p><a class="button button-teal" href="/cotizar">Cotizar receta <span aria-hidden="true">↗</span></a></div></section>
+</Base>

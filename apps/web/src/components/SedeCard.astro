@@ -1,0 +1,11 @@
+---
+interface Props { sede: { id: string; ciudad: string; departamento: string; nombre: string; direccion: string; telefono: string; tel: string; lv: string; sab: string; email?: string }; index?: number }
+const { sede, index } = Astro.props;
+---
+<article class="sede-card">
+  <div class="sede-card-top"><span>{sede.departamento}</span>{index !== undefined && <span>0{index + 1}</span>}</div>
+  <h3><a href={`/sucursales/${sede.id}`}>{sede.ciudad}{sede.nombre !== sede.ciudad ? ` · ${sede.nombre}` : ''}</a></h3>
+  <address>{sede.direccion}</address>
+  <div class="sede-hours"><span>Lunes a viernes {sede.lv}</span><span>Sábados {sede.sab}</span></div>
+  <div class="sede-actions"><a href={`tel:${sede.tel}`}>Llamar {sede.telefono}</a><a href={`/cotizar?sede=${sede.id}`}>Cotizar aquí <span aria-hidden="true">↗</span></a></div>
+</article>

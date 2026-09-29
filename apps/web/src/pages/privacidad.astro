@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+const uploadEnabled = import.meta.env.PUBLIC_RECETA_UPLOAD_ENABLED === 'true';
+const retentionDays = Number(import.meta.env.PUBLIC_RECETAS_RETENTION_DAYS);
+if (uploadEnabled && (!Number.isInteger(retentionDays) || retentionDays < 1 || retentionDays > 365)) {
+  throw new Error('La política de privacidad requiere PUBLIC_RECETAS_RETENTION_DAYS (1–365) al activar el envío.');
+}
+---
+<Base page="privacidad" title="Privacidad de las solicitudes" description="Información sobre el tratamiento de datos y recetas enviados para cotización a MundoMagistral.">
+  <!-- PROPUESTO: texto legal operativo. Revisión y aprobación del cliente/asesoría legal antes del lanzamiento. -->
+  <section class="page-hero dark" data-chapter="faq"><div class="container"><p class="section-kicker">Tus datos</p><h1>Privacidad de las solicitudes</h1><p>Tu receta contiene información de salud. Aquí explicamos cómo se usará al solicitar una cotización.</p></div></section>
+  <section class="section white"><div class="container narrow privacy-prose"><h2>Qué recibimos</h2><p>Al enviar el formulario recibimos tu nombre, número de contacto, sede elegida, observaciones y el archivo de tu receta. Usamos estos datos para revisar y responder tu solicitud de cotización.</p><h2>Quién accede</h2><p>El acceso a la receta debe quedar limitado al personal autorizado de MundoMagistral que atiende tu solicitud. La receta no se publica en este sitio.</p><h2>Conservación</h2><p>{uploadEnabled ? `Conservamos los datos y el archivo de tu solicitud durante ${retentionDays} días. Después de ese plazo dejan de estar disponibles para el personal y se eliminan del almacenamiento privado según la regla de retención configurada.` : 'MundoMagistral informará el plazo de conservación antes de habilitar el envío de recetas desde este sitio.'}</p><h2>WhatsApp</h2><p>Si eliges continuar por WhatsApp, el archivo se adjunta manualmente en el chat y queda sujeto también a las condiciones de ese servicio. El enlace de esta página no adjunta tu receta de forma automática.</p><h2>Consultas</h2><p>Para consultar sobre una solicitud o pedir información sobre el tratamiento de tus datos, comunícate con la línea central indicada en el pie del sitio.</p></div></section>
+</Base>

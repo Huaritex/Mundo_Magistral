@@ -1,0 +1,26 @@
+{
+  "name": "mundo-magistral",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@12.6.0",
+  "scripts": {
+    "dev": "pnpm --filter @mm/web dev",
+    "build": "pnpm --filter @mm/web build",
+    "check": "pnpm --filter @mm/web check",
+    "test:backend": "node scripts/test-receta.mjs",
+    "verify:copy": "node scripts/verify-copy.mjs",
+    "test:e2e": "playwright test -c scripts/playwright.config.mjs",
+    "test:perf": "node scripts/run-lighthouse.mjs",
+    "video:studio": "pnpm --filter @mm/video studio",
+    "video:render": "pnpm --filter @mm/video render",
+    "video:og": "node scripts/render-og.mjs",
+    "video:assets": "node scripts/render-video-assets.mjs",
+    "video:menu": "node scripts/render-menu-assets.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "lighthouse": "13.5.0",
+    "wrangler": "4.143.1"
+  }
+}

@@ -1,0 +1,6 @@
+[
+  {"id":"que-es","pregunta":"¿Qué es un preparado magistral?","respuesta":"Una farmacia de preparados magistrales elabora medicamentos personalizados según prescripción médica, adaptados a las necesidades específicas de cada paciente.","fuente":"VERIFICADO"},
+  {"id":"como-cotizo","pregunta":"¿Cómo solicito una cotización?","respuesta":"Puedes enviar la receta desde el formulario de este sitio o escribir a nuestra línea central. La receta es necesaria para revisar tu solicitud.","fuente":"PROPUESTO"},
+  {"id":"donde-estan","pregunta":"¿Dónde están sus sucursales?","respuesta":"Tenemos ocho sedes en siete departamentos de Bolivia. Consulta direcciones, teléfonos y horarios en el directorio de sucursales.","fuente":"PROPUESTO (cifras verificadas)"},
+  {"id":"consulta-profesional","pregunta":"¿Soy médico: puedo pedir asesoramiento técnico?","respuesta":"MundoMagistral declara un compromiso de acompañamiento y asesoramiento técnico continuo al profesional médico en Bolivia. Puedes comunicarte con nuestra línea central para solicitarlo.","fuente":"PROPUESTO (basado en compromiso verificado)"}
+]

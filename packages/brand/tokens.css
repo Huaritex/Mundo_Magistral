@@ -1,0 +1,23 @@
+:root {
+  --mm-teal: #00a8ac;
+  --mm-teal-ink: #007c80;
+  --mm-violet: #6f4897;
+  --mm-lilac: #a98bd0;
+  --mm-night: #0b1020;
+  --mm-ink: #1e293b;
+  --mm-clinic: #f4f7fb;
+  --mm-wa: #25d366;
+  --mm-border: #e5e5e5;
+  --mm-white: #fff;
+  --step-0: clamp(1rem, .95rem + .25vw, 1.125rem);
+  --step-1: clamp(1.125rem, 1rem + .6vw, 1.35rem);
+  --step-2: clamp(1.4rem, 1.15rem + 1.2vw, 2rem);
+  --step-3: clamp(1.8rem, 1.3rem + 2vw, 2.75rem);
+  --step-4: clamp(2.2rem, 1.5rem + 3vw, 4rem);
+  --step-5: clamp(2.5rem, 1.7rem + 4vw, 5rem);
+  --step-6: clamp(2.8rem, 1.8rem + 5vw, 6rem);
+  --mm-gutter: clamp(16px, 3vw, 32px);
+  --mm-width: 1280px;
+  --dur-page: .8s;
+  --ease-magistral: cubic-bezier(.64, 0, .36, 1);
+}

@@ -1,0 +1,19 @@
+/* Dueño: agente scroll-motion. Estados y utilidades de reveal/parallax. Los estados ocultos iniciales los pone GSAP en runtime, nunca este CSS. */
+@layer motion {
+  /* GSAP es dueño del transform mientras anima: sin transición CSS que lo pelee. */
+  .mm-gsap { transition-property: background-color, color, border-color, opacity !important; }
+  /* Máscara de línea de SplitText: holgura para descendentes sin alterar el flujo. */
+  .mm-line-mask { padding-bottom: .14em; margin-bottom: -.14em; }
+  .world-facts strong { font-variant-numeric: tabular-nums; }
+
+  /* Proceso: línea conectora dibujada por --line (0→1). Sin JS no existe la clase, no se pinta. */
+  .process-list { position: relative; }
+  .process-list.is-drawing::before { content: ''; position: absolute; left: 0; right: 0; top: -1.6rem; height: 2px; pointer-events: none; background: linear-gradient(90deg, #00a8ac, #a98bd0); transform-origin: 0 50%; transform: scaleX(var(--line, 1)); }
+
+  /* Borde oscuro→claro: cúpula del color de la sección que se abre con --seam (0→1). Solo con la clase que pone JS. */
+  .has-seam::before { content: ''; position: absolute; z-index: 1; left: 0; right: 0; bottom: calc(100% - 1px); height: clamp(28px, 5vw, 72px); background: inherit; border-radius: 50% 50% 0 0 / 100% 100% 0 0; transform-origin: 50% 100%; transform: scaleY(var(--seam, 1)); pointer-events: none; }
+
+  /* CTA final: brillo que barre (--sheen en % de ancho). Fuera de pantalla por defecto. */
+  .final-cta .button { position: relative; overflow: hidden; isolation: isolate; }
+  .final-cta .button::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(105deg, transparent 32%, rgba(255,255,255,.5) 50%, transparent 68%); transform: translateX(calc(var(--sheen, 130) * 1%)); }
+}

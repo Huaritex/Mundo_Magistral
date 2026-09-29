@@ -1,0 +1,10 @@
+[
+  {"id":"dermatologia","nombre":"Dermatología","imagen":"1","fuente":"VERIFICADO"},
+  {"id":"ginecologia","nombre":"Ginecología","imagen":"2","fuente":"VERIFICADO"},
+  {"id":"pediatria","nombre":"Pediatría","imagen":"3","fuente":"VERIFICADO"},
+  {"id":"endocrinologia","nombre":"Endocrinología","imagen":"4","fuente":"VERIFICADO"},
+  {"id":"medicina-interna","nombre":"Medicina Interna","imagen":"5","fuente":"VERIFICADO"},
+  {"id":"gastroenterologia","nombre":"Gastroenterología","imagen":"6","fuente":"VERIFICADO"},
+  {"id":"neuropsiquiatria","nombre":"Neuropsiquiatría","imagen":"7","fuente":"VERIFICADO"},
+  {"id":"reumatologia","nombre":"Reumatología","imagen":"8","fuente":"VERIFICADO"}
+]
