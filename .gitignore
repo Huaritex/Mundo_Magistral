@@ -73,6 +73,10 @@ CLAUDE.md
 claude.md
 GEMINI.md
 gemini.md
+CHATGPT.md
+chatgpt.md
+OPENAI.md
+openai.md
 .agents/
 .agent/
 .gemini/
@@ -82,3 +86,11 @@ gemini.md
 .windsurf/
 .windsurfrules
 .copilot/
+.rules/
+
+# Backups & local files
+*.bak
+*.backup
+*.old
+*.local
+
