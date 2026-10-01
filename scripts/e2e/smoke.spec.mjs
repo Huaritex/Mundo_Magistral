@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { mkdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
+// Los tests de Stage verifican la identidad del nodo <canvas id="stage" /> (sin tocar su contexto WebGL) y
+// cuentan frames con window.__mmFrames (StageCanvas).
 
 const pages = ['/', '/nosotros', '/formas-farmaceuticas', '/sucursales/la-paz', '/cotizar'];
 
@@ -13,18 +18,15 @@ test('contenido y CTA disponibles en las páginas principales', async ({ page })
 
 test('el mismo canvas persiste tras tres navegaciones del cliente', async ({ page }) => {
   await page.goto('/?tier=2');
-  await page.waitForFunction(() => Boolean(window.__mmStageRuntime?.stage), null, { timeout: 15_000 });
-  await page.evaluate(() => {
-    window.__testCanvas = window.__mmStageRuntime.stage.canvas;
-    window.__testContext = window.__mmStageRuntime.stage.renderer.getContext();
-  });
+  await page.waitForSelector('canvas#stage', { state: 'attached', timeout: 15_000 });
+  // Solo identidad del nodo: NO llamar getContext() (crearía el contexto con atributos por defecto y competiría con three/R3F).
+  await page.evaluate(() => { window.__testCanvas = document.getElementById('stage'); });
   for (const path of ['/nosotros', '/especialidades', '/formas-farmaceuticas']) {
     await page.locator(`header a[href="${path}"]`).first().click();
     await expect(page).toHaveURL(new RegExp(`${path}$`));
     const persists = await page.evaluate(() => {
       const canvas = document.getElementById('stage');
-      const stage = window.__mmStageRuntime?.stage;
-      return stage && canvas === window.__testCanvas && stage.renderer.getContext() === window.__testContext;
+      return Boolean(canvas) && canvas === window.__testCanvas;
     });
     expect(persists).toBe(true);
   }
@@ -32,12 +34,11 @@ test('el mismo canvas persiste tras tres navegaciones del cliente', async ({ pag
 
 test('el Stage sigue dibujando durante la navegación', async ({ page }) => {
   await page.goto('/?tier=2');
-  await page.waitForFunction(() => Boolean(window.__mmStageRuntime?.stage), null, { timeout: 15_000 });
+  // window.__mmFrames incrementa en cada gl.render del Stage R3F.
+  await page.waitForFunction(() => (window.__mmFrames ?? 0) > 0, null, { timeout: 20_000 });
   await page.evaluate(() => {
     window.__frameHashes = [];
-    window.__frameSampler = setInterval(() => {
-      window.__frameHashes.push(window.__mmStageRuntime.stage.renderer.info.render.frame);
-    }, 75);
+    window.__frameSampler = setInterval(() => { window.__frameHashes.push(window.__mmFrames); }, 75);
   });
   await page.locator('header a[href="/nosotros"]').first().click();
   await expect(page).toHaveURL(/\/nosotros$/);
@@ -115,4 +116,25 @@ test('sin violaciones axe WCAG A/AA ni de impacto serio o crítico', async ({ pa
       ['serious', 'critical'].includes(violation.impact));
     expect(important, `axe en ${path}: ${important.map((v) => `${v.id} (${v.nodes.length})`).join(', ')}`).toEqual([]);
   }
+});
+
+test('capturas finales de las cinco rutas a 1440 y 360 px', async ({ page }) => {
+  test.setTimeout(180_000);
+  const output = resolve('artifacts/design-shots/final');
+  await mkdir(output, { recursive: true });
+  for (const width of [1440, 360]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of pages) {
+      await page.goto(`${path}${path.includes('?') ? '&' : '?'}tier=1`);
+      await expect(page.locator('main h1').first()).toBeVisible();
+      const name = path === '/' ? 'home' : path.slice(1).replaceAll('/', '-');
+      await page.screenshot({ path: resolve(output, `${name}-${width}.png`), fullPage: true, animations: 'disabled' });
+    }
+  }
+  await page.goto('/?tier=1');
+  await page.getByRole('button', { name: 'Abrir menú' }).click();
+  await expect(page.locator('#menu-dialog')).toBeVisible();
+  await expect(page.locator('#menu-dialog nav a').first()).toBeInViewport();
+  await page.waitForTimeout(900);
+  await page.screenshot({ path: resolve(output, 'menu-360.png'), animations: 'disabled' });
 });

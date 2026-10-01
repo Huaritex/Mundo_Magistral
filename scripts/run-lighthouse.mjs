@@ -3,13 +3,17 @@ import { mkdir, readFile, stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 import { chromium } from '@playwright/test';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const dist = join(root, 'apps/web/dist');
+// Sirve apps/site/dist como Cloudflare Pages: /ruta → ruta.html o ruta/index.html.
+const dist = join(root, 'apps/site/dist');
 const output = join(root, 'artifacts/lighthouse');
 const cli = join(root, 'node_modules/.bin/lighthouse');
-const paths = ['/', '/nosotros', '/formas-farmaceuticas', '/sucursales/la-paz', '/cotizar'];
+// PATHS=/,/nosotros acota las rutas; COMPRESS=1 sirve gzip como Cloudflare (por defecto sin comprimir, igual que la línea base).
+const paths = process.env.PATHS ? process.env.PATHS.split(',') : ['/', '/nosotros', '/formas-farmaceuticas', '/sucursales/la-paz', '/cotizar'];
+const compress = process.env.COMPRESS === '1';
 const mime = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json',
@@ -31,10 +35,21 @@ const server = createServer(async (request, response) => {
     const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
     let file = resolve(dist, `.${pathname}`);
     if (file !== dist && !file.startsWith(`${dist}${sep}`)) throw new Error('Ruta fuera de dist');
-    if ((await stat(file)).isDirectory()) file = join(file, 'index.html');
+    const isFile = async (path) => (await stat(path).catch(() => null))?.isFile() ?? false;
+    if (!(await isFile(file))) {
+      const index = join(file, 'index.html');
+      file = (await isFile(index)) ? index : `${file}.html`;
+    }
     const body = await readFile(file);
-    response.writeHead(200, { 'Content-Type': mime[extname(file)] || 'application/octet-stream' });
-    response.end(body);
+    const headers = { 'Content-Type': mime[extname(file)] || 'application/octet-stream' };
+    if (compress && /^(\.html|\.js|\.css|\.json|\.svg)$/.test(extname(file))) {
+      headers['Content-Encoding'] = 'gzip';
+      response.writeHead(200, headers);
+      response.end(gzipSync(body));
+    } else {
+      response.writeHead(200, headers);
+      response.end(body);
+    }
   } catch {
     response.writeHead(404);
     response.end('Not found');

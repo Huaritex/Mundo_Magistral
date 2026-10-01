@@ -5,7 +5,9 @@ export const BRAND = {
   violet: 0x6f4897,
   lilac: 0xa98bd0,
   pearl: 0xf4f7fb,
-  night: 0x0b1020,
+  night: 0x22163a,
+  /** Base del sitio (blanco principal): fondo del shader y del Stage en los capítulos claros. */
+  white: 0xffffff,
 } as const;
 
 export function createMortar(physical = false): THREE.Group {
@@ -80,18 +82,26 @@ function latLngPosition(lat: number, lng: number, radius: number): THREE.Vector3
   );
 }
 
-export function createGlobe(tier: 2 | 3): { group: THREE.Group; pins: THREE.Group; setPinProgress: (progress: number) => void } {
+const _tmp = new THREE.Color();
+/** Mezcla `dark`→`light` (hex sRGB) con k 0..1 en `out`. Sin estado entre llamadas salvo el temporal. */
+const lerpHex = (dark: number, light: number, k: number, out: THREE.Color) => out.set(dark).lerp(_tmp.set(light), k);
+
+export type Globe = {
+  group: THREE.Group;
+  pins: THREE.Group;
+  setPinProgress: (progress: number) => void;
+  /** 0 = capítulo oscuro (agua teal profundo, puntos turquesa/lila); 1 = capítulo claro (esfera perla lila, puntos turquesa profundo/violeta). Idempotente. */
+  setLight: (light: number) => void;
+};
+
+export function createGlobe(tier: 2 | 3): Globe {
   const group = new THREE.Group();
   const radius = .73;
-  const water = new THREE.Mesh(
-    new THREE.SphereGeometry(radius, tier === 3 ? 48 : 28, tier === 3 ? 32 : 18),
-    new THREE.MeshStandardMaterial({ color: 0x083940, emissive: 0x06343b, emissiveIntensity: .6, metalness: .33, roughness: .42 }),
-  );
+  const waterMaterial = new THREE.MeshStandardMaterial({ color: 0x083940, emissive: 0x06343b, emissiveIntensity: .6, metalness: .33, roughness: .42 });
+  const water = new THREE.Mesh(new THREE.SphereGeometry(radius, tier === 3 ? 48 : 28, tier === 3 ? 32 : 18), waterMaterial);
   group.add(water);
-  const grid = new THREE.Mesh(
-    new THREE.SphereGeometry(radius + .005, 22, 14),
-    new THREE.MeshBasicMaterial({ color: BRAND.teal, wireframe: true, transparent: true, opacity: .1 }),
-  );
+  const gridMaterial = new THREE.MeshBasicMaterial({ color: BRAND.teal, wireframe: true, transparent: true, opacity: .1 });
+  const grid = new THREE.Mesh(new THREE.SphereGeometry(radius + .005, 22, 14), gridMaterial);
   group.add(grid);
 
   // Sparse point-cloud land silhouettes: procedural and deterministic, so no texture download.
@@ -101,7 +111,9 @@ export function createGlobe(tier: 2 | 3): { group: THREE.Group; pins: THREE.Grou
     [15, 48, 30, 14], [22, 3, 21, 34], [84, 43, 50, 22],
     [114, 13, 16, 21], [135, -25, 24, 15], [-42, 73, 17, 10],
   ];
-  const points: number[] = [];
+  // Dos familias de puntos (turquesa y violeta/lila) repartidas con un hash fijo: la tierra se ve bicolor, como el logo.
+  const pointsA: number[] = [];
+  const pointsB: number[] = [];
   for (let lat = -80; lat <= 80; lat += tier === 3 ? 2.6 : 3.7) {
     for (let lng = -180; lng < 180; lng += tier === 3 ? 2.8 : 4) {
       const land = lands.some(([cx, cy, rx, ry]) => {
@@ -112,16 +124,22 @@ export function createGlobe(tier: 2 | 3): { group: THREE.Group; pins: THREE.Grou
       });
       if (land) {
         const p = latLngPosition(lat, lng, radius + .018);
-        points.push(p.x, p.y, p.z);
+        const h = Math.sin(lat * 12.9898 + lng * 78.233) * 43758.5453;
+        (h - Math.floor(h) < .45 ? pointsB : pointsA).push(p.x, p.y, p.z);
       }
     }
   }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
-  group.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: BRAND.teal, size: tier === 3 ? .025 : .032, sizeAttenuation: true })));
+  const landSize = tier === 3 ? .025 : .032;
+  const landA = new THREE.PointsMaterial({ color: BRAND.teal, size: landSize, sizeAttenuation: true });
+  const landB = new THREE.PointsMaterial({ color: BRAND.lilac, size: landSize, sizeAttenuation: true });
+  for (const [positions, material] of [[pointsA, landA], [pointsB, landB]] as const) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    group.add(new THREE.Points(geo, material));
+  }
 
   const pins = new THREE.Group();
-  const pinGeo = new THREE.SphereGeometry(.042, 8, 6);
+  const pinGeo = new THREE.SphereGeometry(.03, 10, 8);
   const pinMat = new THREE.MeshBasicMaterial({ color: 0x9ce7e8 });
   const markers = new THREE.InstancedMesh(pinGeo, pinMat, CITY_MARKERS.length);
   const dummy = new THREE.Object3D();
@@ -144,5 +162,22 @@ export function createGlobe(tier: 2 | 3): { group: THREE.Group; pins: THREE.Grou
     });
     markers.instanceMatrix.needsUpdate = true;
   };
-  return { group, pins, setPinProgress };
+
+  let applied = -1;
+  const setLight = (light: number) => {
+    const k = THREE.MathUtils.clamp(light, 0, 1);
+    if (Math.abs(k - applied) < .002) return;
+    applied = k;
+    lerpHex(0x083940, 0xe3daf2, k, waterMaterial.color);
+    lerpHex(0x06343b, 0x6f4897, k, waterMaterial.emissive);
+    waterMaterial.emissiveIntensity = THREE.MathUtils.lerp(.6, .08, k);
+    waterMaterial.metalness = THREE.MathUtils.lerp(.33, .06, k);
+    waterMaterial.roughness = THREE.MathUtils.lerp(.42, .36, k);
+    lerpHex(BRAND.teal, 0x00868a, k, landA.color);
+    lerpHex(BRAND.lilac, BRAND.violet, k, landB.color);
+    lerpHex(BRAND.teal, BRAND.violet, k, gridMaterial.color);
+    gridMaterial.opacity = THREE.MathUtils.lerp(.1, .2, k);
+    lerpHex(0x9ce7e8, 0x007c80, k, pinMat.color);
+  };
+  return { group, pins, setPinProgress, setLight };
 }

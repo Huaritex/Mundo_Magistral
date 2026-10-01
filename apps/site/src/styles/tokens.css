@@ -1,0 +1,79 @@
+/* Sistema de diseño de MundoMagistral (Fase C). Idea rectora: la fórmula magistral (ver apps/site/DESIGN.md).
+   Este archivo fija el orden de capas de TODO el CSS (debe ser el primero que se importe) y los tokens propios del
+   sitio. Los colores de marca (turquesa, violeta, lila, tinta = --mm-night, WhatsApp) viven en @mm/brand/tokens.css.
+   Jerarquía de color (orden de Cbass): BLANCO principal (--paper / --porcelain), MORADO secundario (acentos, líneas, tipografía de énfasis y
+   como máximo 2 o 3 bloques de fondo morado profundo por página: la fórmula, el CTA final y el pie). */
+@layer reset, base, layout, components, pages, motion;
+
+/* ---------- Fuentes ----------
+   UI y texto: Outfit (geométrica como el logo), precargada desde Layout.tsx. Display: Crimson Pro (serif humanista de contraste
+   medio; latin wght 48 KB), que NO se declara aquí: lib/fonts.ts la registra con la API FontFace cuando la página ya pintó
+   (tras `load` + idle), porque en la simulación de Lighthouse (COMPRESS=1) sus 48 KB en la ruta crítica costaban +155 ms de LCP
+   en /cotizar y en /. Mientras tanto los titulares se pintan con 'Crimson Fallback': Times/Liberation Serif con size-adjust y
+   overrides medidos (mismo ancho y misma altura de línea), así que el cambio de fuente no mueve el layout. */
+@font-face { font-family: 'Outfit'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Outfit Fallback'; font-weight: 100 900; src: local('Arial'), local('Liberation Sans'), local('Helvetica'); size-adjust: 98.13%; ascent-override: 101.9%; descent-override: 26.49%; line-gap-override: 0%; }
+@font-face { font-family: 'Crimson Fallback'; font-weight: 100 900; src: local('Times New Roman'), local('Liberation Serif'), local('Times'); size-adjust: 100.1%; ascent-override: 89.5%; descent-override: 21.5%; line-gap-override: 0%; }
+/* Android y otros sin Times/Liberation: su serif de sistema es Noto Serif (más ancha: medida aparte con artifacts/design-shots/_metrics.mjs). */
+@font-face { font-family: 'Crimson Fallback Noto'; font-weight: 100 900; src: local('Noto Serif'), local('NotoSerif'); size-adjust: 84.46%; ascent-override: 106.08%; descent-override: 25.45%; line-gap-override: 0%; }
+
+:root {
+  /* Color: marca intacta; neutros derivados del violeta para que nada sea gris puro. */
+  --ink: var(--mm-night, #22163a);            /* tinta violeta: texto sobre claro y fondo de los bloques de morado profundo (fórmula, CTA, pie) */
+  --ink-2: #4b4263;                           /* texto secundario sobre claro */
+  --ink-3: #5a5170;                           /* leyendas sobre claro */
+  --porcelain: #f2f5f6;                       /* base clara, fría, clínica */
+  --paper: #ffffff;                           /* blanco principal: fondo del Stage y de las secciones .white */
+  --violet: var(--mm-violet, #6f4897);        /* lo humano: títulos, paciente, filosofía */
+  --violet-deep: #583479;
+  --teal: var(--mm-teal, #00a8ac);            /* lo activo y lo químico: acciones, medidas, foco */
+  --teal-hover: #13bcc0;
+  --teal-ink: var(--mm-teal-ink, #007c80);    /* turquesa como texto sobre claro (solo >= 16 px) */
+  --lilac: var(--mm-lilac, #a98bd0);          /* violeta como texto sobre tinta opaca */
+  --wa: var(--mm-wa, #25d366);
+  --wa-text: #0b1b2b;
+  --on-dark: #ffffff;
+  --on-dark-2: #e3dcf0;                       /* secundario sobre capas translúcidas (peor caso 5.4:1) */
+  --line: rgb(34 22 58 / .16);                /* filetes decorativos */
+  --line-rule: rgb(34 22 58 / .24);           /* reglas decorativas más marcadas sobre claro (línea del proceso) */
+  --line-strong: #8a8299;                     /* bordes de campos (3.66:1 sobre blanco) */
+  --line-dark: rgb(255 255 255 / .32);
+  --error: #9d1b32;
+  --focus: var(--violet);
+  --focus-dark: var(--lilac);
+
+  /* Tipografía */
+  --font-ui: 'Outfit', 'Outfit Fallback', Arial, 'Liberation Sans', sans-serif;
+  --font-display: 'Crimson Pro', 'Crimson Fallback', 'Crimson Fallback Noto', 'Times New Roman', 'Liberation Serif', Georgia, serif;
+  --t-micro: .8125rem;
+  --t-small: .9375rem;
+  --t-body: clamp(1rem, .96rem + .2vw, 1.0625rem);
+  --t-lead: clamp(1.1875rem, 1.08rem + .5vw, 1.4375rem);
+  --t-h3: clamp(1.5rem, 1.3rem + .9vw, 2rem);
+  --t-h2: clamp(2.25rem, 1.5rem + 3.2vw, 4.1rem);
+  --t-h1: clamp(2.6rem, 1.55rem + 4.7vw, 5.4rem);
+  --t-display: clamp(3.25rem, 1.6rem + 6.9vw, 7.4rem);
+  --t-formula: clamp(2.2rem, 1.25rem + 4vw, 4.9rem);
+  --lh-ui: 1.55;
+  --lh-serif-text: 1.6;    /* serif +.05 sobre la sans en texto corrido */
+  --lh-display: 1.04;
+
+  /* Espaciado (base 4 px) y ritmo vertical */
+  --s-1: .25rem; --s-2: .5rem; --s-3: .75rem; --s-4: 1rem; --s-5: 1.5rem; --s-6: 2rem; --s-7: 3rem; --s-8: 4.5rem; --s-9: 6.5rem;
+  --section-y: clamp(4.5rem, 3rem + 7vw, 8.5rem);
+  --gutter: clamp(16px, 3vw, 32px);
+  --measure: 62ch;
+
+  /* Radios jerarquizados: redondeado = se puede pulsar; recto = es un dato. */
+  --r-data: 2px;       /* etiquetas de preparado, filetes, tablas */
+  --r-media: 6px;      /* fotografías y vídeo */
+  --r-field: 6px;      /* campos de formulario */
+  --r-action: 999px;   /* botones, pestañas, chips */
+
+  /* Elevaciones: dos, teñidas de tinta (no sombra gris) */
+  --e-float: 0 12px 32px -14px rgb(34 22 58 / .38), 0 2px 6px -2px rgb(34 22 58 / .18);  /* isla del header, WhatsApp, formulario */
+  --e-paper: 0 1px 0 rgb(34 22 58 / .05), 0 18px 40px -28px rgb(34 22 58 / .45);          /* etiquetas sobre claro */
+
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --dur-ui: .2s;
+}

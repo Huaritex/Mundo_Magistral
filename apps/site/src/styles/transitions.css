@@ -1,0 +1,47 @@
+/* Dueño: orquestador. Transición de página: el contenido nuevo se abre en círculo desde el punto del click
+   (--vt-x/--vt-y los fija motion/navigation.ts); el saliente se aleja y se oscurece. Al volver atrás
+   la cortina barre de izquierda a derecha. El canvas del Stage NO se congela: su snapshot "new" es en vivo. */
+@layer motion {
+  main { view-transition-name: content; }
+  #stage { view-transition-name: stage; }
+
+  /* El resto de la página (header persistente, footer, WhatsApp) no hace crossfade: solo cambia el contenido. */
+  ::view-transition-old(root) { display: none; }
+  ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+  ::view-transition-group(stage), ::view-transition-old(stage), ::view-transition-new(stage) { animation: none; }
+  ::view-transition-old(stage) { display: none; }
+
+  /* Header y WhatsApp flotante son persistentes y nunca se ocultan: con nombre propio (z-index alto) quedan por encima
+     de los grupos content/stage. Sin esto el grupo `content` (opaco, a pantalla completa) los tapa durante la transición
+     (en Astro lo resolvía transition:persist). Sin animación: solo se muestra el snapshot nuevo. */
+  /* Solo durante la transición (html[data-vt-run] lo pone motion/navigation.ts): un view-transition-name permanente hace
+     del header un "backdrop root" y el backdrop-filter de la isla de vidrio deja de difuminar la página que pasa por detrás. */
+  html[data-vt-run] .site-header { view-transition-name: site-header; }
+  html[data-vt-run] .floating-wa { view-transition-name: wa; }
+  ::view-transition-group(site-header), ::view-transition-old(site-header), ::view-transition-new(site-header),
+  ::view-transition-group(wa), ::view-transition-old(wa), ::view-transition-new(wa) { animation: none; }
+  ::view-transition-old(site-header), ::view-transition-old(wa) { display: none; }
+
+  ::view-transition-group(content) { animation-duration: .8s; overflow: clip; }
+  ::view-transition-old(content) { animation: .7s cubic-bezier(.16, 1, .3, 1) both vt-out; }
+  ::view-transition-new(content) { animation: .85s cubic-bezier(.16, 1, .3, 1) both vt-in; }
+  html[data-vt='back'] ::view-transition-old(content) { animation-name: vt-out-back; }
+  html[data-vt='back'] ::view-transition-new(content) { animation-name: vt-in-back; }
+
+  @keyframes vt-out { to { transform: scale(.97) translateY(-2vh); filter: brightness(.45) saturate(.85); } }
+  @keyframes vt-in {
+    from { clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 50%)); }
+    to { clip-path: circle(160vmax at var(--vt-x, 50%) var(--vt-y, 50%)); }
+  }
+  @keyframes vt-out-back { to { transform: scale(.97) translateX(3vw); filter: brightness(.45) saturate(.85); } }
+  @keyframes vt-in-back { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+  @keyframes vt-fade { from { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(content) { animation-duration: .15s; }
+    ::view-transition-old(content) { animation: none; }
+    ::view-transition-new(content), html[data-vt='back'] ::view-transition-new(content) { animation: .15s linear both vt-fade; }
+  }
+  .reduce-motion::view-transition-old(content) { animation: none; }
+  .reduce-motion::view-transition-new(content) { animation: .15s linear both vt-fade; }
+}

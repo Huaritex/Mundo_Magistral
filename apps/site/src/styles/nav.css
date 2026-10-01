@@ -1,0 +1,147 @@
+/* Dueño: agente navbar. Isla flotante adaptativa, menú overlay y botón flotante de WhatsApp.
+   Movimiento: solo transform / opacity / clip-path. Las clases .reduce-motion neutralizan lo que el kill-switch global no cubre. */
+@layer components {
+  .site-header, .menu-dialog, .floating-wa { --ease-nav: cubic-bezier(.16, 1, .3, 1); --island-inset: clamp(8px, 2vw, 24px); --island-h: 56px; --logo-h: 58px; }
+
+  /* ---------- Isla ---------- */
+  /* Silueta: píldora de vidrio que flota sobre el contenido en vez de una barra pegada al borde.
+     Tono claro (casi todo el sitio, fondo blanco) = vidrio blanco con filete violeta y el logo a color directo, sin parche;
+     tono oscuro (sobre fórmula, CTA final y pie) = vidrio tinta + logo en chip blanco (el violeta del logo no se lee sobre oscuro). */
+  .site-header { position: fixed; inset: 16px 0 auto; z-index: 60; pointer-events: none; color: var(--ink); }
+  .header-shell {
+    position: relative; pointer-events: auto; display: flex; align-items: center; gap: .6rem;
+    width: min(100% - 2 * var(--island-inset), 1240px); height: var(--island-h); margin-inline: auto;
+    padding: 0 6px 0 16px; border-radius: 999px; transform-origin: 50% 0;
+    transition: transform .55s var(--ease-nav), color .35s ease;
+  }
+  .site-header:not(.is-ready) .header-shell { animation: island-in .9s var(--ease-nav) .05s backwards; }
+  /* Solo transform: el header nunca baja de opacidad (contraste estable para axe y lectores de pantalla desde el primer frame). */
+  @keyframes island-in { from { transform: translateY(-18px) scale(.97); } }
+  .site-header.is-compact .header-shell { transform: translateY(-2px) scale(.955); }
+
+  .island-glass { position: absolute; inset: 0; z-index: 0; border-radius: inherit; pointer-events: none; -webkit-backdrop-filter: blur(16px) saturate(1.5); backdrop-filter: blur(16px) saturate(1.5); }
+  .island-glass::before, .island-glass::after { content: ''; position: absolute; inset: 0; border-radius: inherit; transition: opacity .45s ease; }
+  .island-glass::before { background: rgba(255,255,255,.86); border: 1px solid rgba(111,72,151,.16); box-shadow: 0 12px 34px -14px rgba(60,40,110,.38), 0 2px 6px -2px rgba(34,22,58,.12); }
+  .island-glass::after { opacity: 0; background: linear-gradient(120deg, rgba(34,22,58,.8), rgba(46,30,78,.7)); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 14px 40px -16px rgba(0,168,172,.5), inset 0 1px 0 rgba(255,255,255,.08); }
+  .site-header[data-tone='dark'] .header-shell { color: #f8fafc; }
+  .site-header[data-tone='dark'] .island-glass::before { opacity: 0; }
+  .site-header[data-tone='dark'] .island-glass::after { opacity: 1; }
+  .site-header[data-tone='dark'] :focus-visible { outline-color: var(--mm-lilac, #A98BD0); }
+
+  .header-shell > :not(.island-glass):not(.header-progress) { position: relative; z-index: 1; }
+
+  /* Logo: emblema sobre wordmark, pensado para fondo blanco. En tono claro va directo sobre el vidrio blanco (sin parche);
+     en tono oscuro recupera el medallón blanco que sobresale de la isla (el violeta del logo no tiene contraste sobre vidrio oscuro). */
+  .brand { flex: 0 0 auto; display: block; height: calc(var(--logo-h) + 12px); margin-block: calc((var(--island-h) - var(--logo-h) - 12px) / 2); padding: 6px 14px; border-radius: 999px; background: transparent; box-shadow: none; box-sizing: border-box; transition: background-color .35s ease, box-shadow .35s ease; }
+  .site-header[data-tone='dark'] .brand { background: #fff; box-shadow: 0 8px 22px -8px rgba(34,22,58,.45), 0 0 0 1px rgba(34,22,58,.08); }
+  .brand img { display: block; width: auto; height: var(--logo-h); aspect-ratio: 216 / 126.3; }
+
+  /* ---------- Nav de escritorio ---------- */
+  .desktop-nav { position: relative; display: none; gap: .15rem; margin-left: auto; align-items: center; }
+  .desktop-nav a { position: relative; z-index: 1; display: inline-flex; align-items: center; padding: .78rem .9rem; border-radius: 999px; font-size: .875rem; font-weight: 620; text-decoration: none; white-space: nowrap; }
+  .nav-pill { position: absolute; inset: 0; z-index: 0; border-radius: 999px; pointer-events: none; opacity: 0; clip-path: inset(0 100% 0 0 round 999px); background: rgba(0,168,172,.15); }
+  .site-header[data-tone='dark'] .nav-pill { background: rgba(255,255,255,.15); }
+  /* Roll del label: el duplicado aria-hidden sube desde abajo, con el color de acento. */
+  .lbl { position: relative; display: block; overflow: hidden; padding-block: 1px; line-height: 1.35; }
+  .lbl-a, .lbl-b { display: block; transition: transform .5s var(--ease-nav); }
+  .lbl-b { position: absolute; left: 0; top: 0; color: var(--mm-violet, #6F4897); transform: translateY(110%); }
+  .site-header[data-tone='dark'] .lbl-b { color: #7ee3e4; }
+  .desktop-nav a[aria-current='page'] .lbl-a { color: var(--mm-violet, #6F4897); }
+  .site-header[data-tone='dark'] .desktop-nav a[aria-current='page'] .lbl-a { color: #7ee3e4; }
+  @media (hover: hover) {
+    .desktop-nav a:hover .lbl-a, .desktop-nav a:focus-visible .lbl-a { transform: translateY(-110%); }
+    .desktop-nav a:hover .lbl-b, .desktop-nav a:focus-visible .lbl-b { transform: none; }
+  }
+  .reduce-motion .desktop-nav a .lbl-a, .reduce-motion .desktop-nav a:hover .lbl-a, .reduce-motion .desktop-nav a:focus-visible .lbl-a { transform: none; }
+  .reduce-motion .lbl-b { display: none; }
+
+  /* ---------- CTA ---------- */
+  .cta-zone { flex: 0 0 auto; margin-left: auto; padding: 12px; margin-block: -12px; margin-right: -6px; }
+  .site-header .header-cta { position: relative; z-index: 1; isolation: isolate; overflow: hidden; min-height: 46px; padding: .5rem 1.05rem; font-size: .8125rem; white-space: nowrap; transition: color .3s ease; will-change: auto; }
+  .site-header .header-cta:hover { transform: none; background: var(--mm-violet, #6F4897); }
+  /* Sobre vidrio oscuro el violeta pierde borde: el CTA cambia a turquesa con texto tinta (5.01:1). */
+  .header-cta::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--mm-teal, #00A8AC); opacity: 0; transition: opacity .4s ease; }
+  .site-header[data-tone='dark'] .header-cta { color: var(--ink); }
+  .site-header[data-tone='dark'] .header-cta::before { opacity: 1; }
+  /* Sweep de brillo al hover. */
+  .header-cta::after { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.34) 50%, transparent 65%); transform: translateX(-125%); }
+  @media (hover: hover) {
+    .header-cta:hover::after, .header-cta:focus-visible::after { transform: translateX(125%); transition: transform .8s var(--ease-nav); }
+  }
+  .reduce-motion .header-cta::after { display: none; }
+
+  /* ---------- Progreso de scroll ---------- */
+  .header-progress { position: absolute; left: calc(var(--logo-h) * 1.71 + 40px); right: 34px; bottom: 4px; height: 2px; border-radius: 2px; pointer-events: none; background: color-mix(in srgb, currentColor 9%, transparent); overflow: hidden; }
+  .header-progress i { display: block; height: 100%; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, var(--mm-teal, #00A8AC), var(--mm-violet, #6F4897)); will-change: transform; }
+  .site-header[data-tone='dark'] .header-progress i { background: linear-gradient(90deg, var(--mm-teal, #00A8AC), var(--mm-lilac, #A98BD0)); }
+
+  /* ---------- Hamburguesa / cerrar (mismo ícono: en el dialog queda sobre el trigger y solo cambia de forma) ---------- */
+  .menu-trigger { display: grid; place-content: center; flex: 0 0 auto; width: 46px; height: 46px; padding: 0; color: inherit; background: transparent; border: 0; border-radius: 50%; cursor: pointer; }
+  .bars { display: grid; gap: 6px; width: 22px; }
+  .bars i { display: block; height: 2px; background: currentColor; border-radius: 2px; transition: transform .55s var(--ease-nav); }
+  .menu-trigger[aria-expanded='true'] .bars i:first-child, .menu-dialog.is-open .bars i:first-child { transform: translateY(4px) rotate(45deg); }
+  .menu-trigger[aria-expanded='true'] .bars i:last-child, .menu-dialog.is-open .bars i:last-child { transform: translateY(-4px) rotate(-45deg); }
+
+  /* ---------- Menú overlay ---------- */
+  html:has(.menu-dialog[open]) { overflow: hidden; }
+  html.menu-open main, html.menu-open .site-footer { visibility: hidden; }
+  .menu-dialog {
+    position: fixed; inset: 0; width: 100%; max-width: none; height: 100%; max-height: none; margin: 0; padding: 0; border: 0; overflow-y: auto; overscroll-behavior: contain; color: var(--ink);
+    /* Blanco principal y morado secundario; el Stage queda apenas visible detrás. */
+    background: radial-gradient(70% 55% at 100% 0, rgba(111,72,151,.16), transparent 70%), radial-gradient(55% 45% at 0 100%, rgba(111,72,151,.09), transparent 70%), linear-gradient(160deg, rgba(255,255,255,.94), rgba(250,247,253,.93) 55%, rgba(255,255,255,.96));
+    -webkit-backdrop-filter: blur(22px) saturate(1.25); backdrop-filter: blur(22px) saturate(1.25);
+  }
+  /* El fondo lo pinta el propio dialog (así el clip-path circular lo recorta); el ::backdrop queda transparente. */
+  .menu-dialog::backdrop { background: transparent; }
+  /* Tier 1 / movimiento reducido: sin canvas detrás, gradiente casi sólido sobre el póster estático. */
+  html[data-stage-tier='1'] .menu-dialog, html.reduce-motion .menu-dialog {
+    background: radial-gradient(70% 55% at 100% 0, rgba(111,72,151,.14), transparent 70%), radial-gradient(55% 45% at 0 100%, rgba(111,72,151,.08), transparent 70%), linear-gradient(160deg, #fff, #faf7fd 58%, #fff);
+  }
+  .menu-loop { display: none; position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .28; pointer-events: none; }
+  html[data-stage-tier='1']:not(.reduce-motion) .menu-loop { display: block; }
+  .menu-loop[hidden] { display: none !important; }
+  .menu-dialog-inner { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100%; padding: calc(16px + var(--island-h) / 2 - (var(--logo-h) + 10px) / 2) calc(var(--island-inset) + 6px) max(2.4rem, calc(1rem + env(safe-area-inset-bottom))) calc(var(--island-inset) + 16px); box-sizing: border-box; }
+  .menu-dialog-top { display: flex; justify-content: space-between; align-items: center; }
+  .menu-brand { display: block; padding: 5px 12px; border-radius: 999px; }
+  .menu-brand img { display: block; height: var(--logo-h); width: auto; aspect-ratio: 216 / 126.3; }
+  .menu-close { display: inline-flex; align-items: center; gap: .6rem; height: 44px; padding: 0 11px 0 4px; color: var(--ink); background: transparent; border: 0; border-radius: 999px; cursor: pointer; font-size: .9rem; font-weight: 600; }
+  .menu-dialog nav { display: flex; flex-direction: column; gap: .3rem; margin-block: auto 2.2rem; padding-top: 2rem; }
+  .menu-dialog nav a { display: block; width: fit-content; font-family: var(--font-display); font-weight: 500; font-size: clamp(2.6rem, 8vw, 5.5rem); line-height: 1.12; text-decoration: none; transition: transform .6s var(--ease-nav), opacity .3s ease, color .3s ease; }
+  .menu-dialog nav a[aria-current='page'] { color: var(--violet); }
+  /* Foco de atención: los demás bajan, el link elegido se corre. */
+  @media (hover: hover) {
+    .menu-dialog nav:has(a:is(:hover, :focus-visible)) a:not(:is(:hover, :focus-visible)) { opacity: .5; }
+  }
+  .menu-dialog nav:has(a:focus-visible) a:not(:focus-visible) { opacity: .5; }
+  .menu-dialog nav a:is(:hover, :focus-visible) { transform: translateX(.75rem); color: var(--violet-deep); }
+  .reduce-motion .menu-dialog nav a:is(:hover, :focus-visible) { transform: none; }
+  .menu-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.6rem; }
+  .menu-wa { color: var(--violet); text-underline-offset: .3em; }
+  .menu-wa:hover { color: var(--violet-deep); }
+
+  /* ---------- WhatsApp flotante ---------- */
+  .floating-wa { position: fixed; z-index: 70; right: clamp(14px, 3vw, 32px); bottom: max(18px, env(safe-area-inset-bottom)); display: inline-flex; align-items: center; gap: .55rem; min-height: 50px; padding: .7rem 1rem; border-radius: 50px; background: var(--mm-wa, #25D366); color: var(--wa-text, #0B1B2B); font-weight: 650; text-decoration: none; box-shadow: 0 8px 26px -6px rgba(37,211,102,.55), 0 2px 8px rgba(34,22,58,.28); transition: background-color .2s ease, transform .4s var(--ease-nav); }
+  .floating-wa:not(.is-ready) { animation: wa-in .9s var(--ease-nav) 1.1s backwards; }
+  @keyframes wa-in { from { transform: translateY(24px) scale(.9); } }
+  .floating-wa:hover { background: #3ce477; transform: translateY(-2px); }
+  .floating-wa svg { flex: 0 0 auto; }
+  .wa-ring { position: absolute; inset: 0; border-radius: inherit; border: 2px solid rgba(37,211,102,.75); opacity: 0; pointer-events: none; }
+  .reduce-motion .wa-ring { display: none; }
+
+  /* ---------- Breakpoints ---------- */
+  @media (min-width: 1150px) {
+    .site-header, .menu-dialog, .floating-wa { --island-h: 62px; --logo-h: 74px; }
+    .desktop-nav { display: flex; }
+    .menu-trigger { display: none; }
+    .cta-zone { margin-left: 0; margin-right: 0; }
+    .header-shell { padding: 0 12px 0 18px; gap: 1.2rem; }
+    .site-header .header-cta { min-height: 46px; padding: .55rem 1.25rem; font-size: .875rem; }
+    .header-progress { right: 40px; }
+  }
+  @media (max-width: 420px) {
+    .site-header .header-cta { padding-inline: .8rem; font-size: .78rem; }
+    .brand { padding-inline: 8px; }
+    .header-shell { gap: .25rem; padding-left: 10px; }
+    .floating-wa { padding-inline: .75rem; }
+  }
+}

@@ -1,0 +1,21 @@
+/* Estados y utilidades de las escenas de scroll. Los estados ocultos iniciales los pone GSAP en runtime, nunca este CSS:
+   sin JS, con ?rm=1 o en tier 1 el contenido queda en su estado final. Las variables (--line, --node, --leader, --seam, --sheen)
+   tienen su valor final por defecto y GSAP las anima. */
+@layer motion {
+  /* GSAP es dueño del transform mientras anima: sin transición CSS que lo pelee. */
+  .mm-gsap { transition-property: background-color, color, border-color, opacity !important; }
+  /* Máscara de línea de SplitText: holgura para descendentes sin alterar el flujo. */
+  .mm-line-mask { padding-bottom: .14em; margin-bottom: -.14em; }
+  .facts .num { font-variant-numeric: lining-nums tabular-nums; }
+
+  /* Borde oscuro→claro: cúpula del color de la sección que se abre con --seam (0→1). Solo con la clase que pone JS. */
+  .has-seam::before { content: ''; position: absolute; z-index: 1; left: 0; right: 0; bottom: calc(100% - 1px); height: clamp(28px, 5vw, 72px); background: inherit; border-radius: 50% 50% 0 0 / 100% 100% 0 0; transform-origin: 50% 100%; transform: scaleY(var(--seam, 1)); pointer-events: none; }
+
+  /* Con Stage (tier 2/3) las capas claras son translúcidas: la cúpula necesita color sólido para no mezclarse con la sección oscura de abajo. */
+  .has-seam.light::before { background: var(--porcelain); }
+  .has-seam.white::before { background: var(--paper); }
+
+  /* CTA final: brillo que barre (--sheen en % de ancho). Fuera de pantalla por defecto. */
+  .final-cta .button { position: relative; overflow: hidden; isolation: isolate; }
+  .final-cta .button::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(105deg, transparent 32%, rgba(255,255,255,.5) 50%, transparent 68%); transform: translateX(calc(var(--sheen, 130) * 1%)); }
+}

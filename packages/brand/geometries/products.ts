@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { BRAND } from './logo';
 
-const pearl = () => new THREE.MeshStandardMaterial({ color: BRAND.pearl, metalness: .04, roughness: .3 });
+// Perla con un matiz lila: sobre el fondo blanco del sitio la perla pura (#F4F7FB) perdía el contorno.
+const pearl = () => new THREE.MeshStandardMaterial({ color: 0xe4dcf1, metalness: .04, roughness: .3 });
 const violet = () => new THREE.MeshStandardMaterial({ color: BRAND.violet, metalness: .12, roughness: .3 });
 const teal = () => new THREE.MeshStandardMaterial({ color: BRAND.teal, metalness: .1, roughness: .3 });
 

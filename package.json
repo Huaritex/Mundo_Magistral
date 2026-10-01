@@ -4,18 +4,21 @@
   "version": "0.1.0",
   "packageManager": "pnpm@12.6.0",
   "scripts": {
-    "dev": "pnpm --filter @mm/web dev",
-    "build": "pnpm --filter @mm/web build",
-    "check": "pnpm --filter @mm/web check",
+    "dev": "pnpm --filter @mm/site dev",
+    "build": "pnpm --filter @mm/site build",
+    "check": "pnpm --filter @mm/site check",
+    "preview": "pnpm --filter @mm/site preview",
+    "budgets": "node scripts/check-budgets.mjs",
     "test:backend": "node scripts/test-receta.mjs",
     "verify:copy": "node scripts/verify-copy.mjs",
     "test:e2e": "playwright test -c scripts/playwright.config.mjs",
-    "test:perf": "node scripts/run-lighthouse.mjs",
+    "test:perf": "COMPRESS=1 node scripts/run-lighthouse.mjs",
     "video:studio": "pnpm --filter @mm/video studio",
     "video:render": "pnpm --filter @mm/video render",
     "video:og": "node scripts/render-og.mjs",
     "video:assets": "node scripts/render-video-assets.mjs",
-    "video:menu": "node scripts/render-menu-assets.mjs"
+    "video:menu": "node scripts/render-menu-assets.mjs",
+    "video:poster": "node scripts/render-hero-poster.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

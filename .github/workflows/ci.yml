@@ -23,7 +23,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm build
-      - run: pnpm exec wrangler pages functions build apps/web/functions --outdir /tmp/mm-functions-check
+      - run: pnpm exec wrangler pages functions build apps/site/functions --outdir /tmp/mm-functions-check
       - run: node scripts/check-budgets.mjs
       - run: pnpm test:backend
       - run: pnpm audit --audit-level high

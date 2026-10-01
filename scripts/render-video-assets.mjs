@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const video = join(root, 'apps/video');
-const publicMedia = join(root, 'apps/web/public/media');
+const publicMedia = join(root, 'apps/site/public/media');
 const remotion = join(video, 'node_modules/.bin/remotion');
 const maxHeroBytes = 1_200_000;
 

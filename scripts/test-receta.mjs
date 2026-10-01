@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { onRequestPost } from '../apps/web/functions/api/receta.js';
-import { onRequestGet } from '../apps/web/functions/admin/receta.js';
-import { boundedFormData, sniffFile } from '../apps/web/functions/_lib/receta.js';
+import { onRequestPost } from '../apps/site/functions/api/receta.js';
+import { onRequestGet } from '../apps/site/functions/admin/receta.js';
+import { boundedFormData, sniffFile } from '../apps/site/functions/_lib/receta.js';
 
 const ORIGIN = 'https://mundomagistral.bo';
 const PNG = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0]);

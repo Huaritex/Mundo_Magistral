@@ -1,4 +1,6 @@
-import verifiedCopy from '../apps/web/src/content/verified-copy.json' with { type: 'json' };
+import { readFileSync } from 'node:fs';
+
+const verifiedCopy = JSON.parse(readFileSync(new URL('../apps/site/src/content/verified-copy.json', import.meta.url), 'utf8'));
 
 const source = process.env.MM_WP_PAGES_URL ?? 'https://mundomagistral.bo/wp-json/wp/v2/pages?per_page=100';
 const expectedPage = {

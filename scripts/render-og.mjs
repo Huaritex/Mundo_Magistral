@@ -1,14 +1,14 @@
 import { spawn } from 'node:child_process';
-import { mkdtemp, mkdir, rm } from 'node:fs/promises';
+import { copyFile, mkdtemp, mkdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import sedes from '../apps/web/src/content/sedes.json' with { type: 'json' };
-import especialidades from '../apps/web/src/content/especialidades.json' with { type: 'json' };
+import sedes from '../apps/site/src/content/sedes.json' with { type: 'json' };
+import especialidades from '../apps/site/src/content/especialidades.json' with { type: 'json' };
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const video = join(root, 'apps/video');
-const out = join(root, 'apps/web/public/media/og');
+const out = join(root, 'apps/site/public/media/og');
 const remotion = join(video, 'node_modules/.bin/remotion');
 
 const cards = [
@@ -37,6 +37,8 @@ try {
     await run('magick', [png, '-strip', '-quality', '79', join(out, `${name}.webp`)], root);
     process.stdout.write(`OG ${name}.webp listo\n`);
   }
+  await copyFile(join(out, 'home.webp'), join(root, 'apps/site/public/media/og-default.webp'));
+  process.stdout.write('OG por defecto listo\n');
 } finally {
   await rm(temp, { recursive: true, force: true });
 }

@@ -1,9 +1,0 @@
----
-interface Props { item: { id: string; nombre: string; imagen: string }; index?: number }
-const { item, index } = Astro.props;
----
-<a class="specialty-card" href={`/especialidades/${item.id}`} transition:name={`specialty-${item.id}`}>
-  <img src={`/media/especialidades/${item.imagen}.webp`} alt="" width="420" height="280" loading="lazy" decoding="async" />
-  <span class="specialty-index">{index !== undefined ? String(index + 1).padStart(2, '0') : ''}</span>
-  <span class="specialty-title">{item.nombre}<span aria-hidden="true">↗</span></span>
-</a>

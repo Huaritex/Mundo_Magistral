@@ -2,7 +2,10 @@ import { defineConfig, devices } from '@playwright/test';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const web = resolve(dirname(fileURLToPath(import.meta.url)), '../apps/web');
+// apps/site: vite preview :4324
+const app = resolve(dirname(fileURLToPath(import.meta.url)), '../apps/site');
+const port = 4324;
+const command = `./node_modules/.bin/vite preview --host 127.0.0.1 --port ${port} --strictPort`;
 
 export default defineConfig({
   testDir: './e2e',
@@ -11,13 +14,13 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['html', { outputFolder: 'artifacts/playwright-report', open: 'never' }]] : 'list',
   use: {
     ...devices['Desktop Chrome'],
-    baseURL: 'http://127.0.0.1:4321',
+    baseURL: `http://127.0.0.1:${port}`,
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: './node_modules/.bin/astro preview --host 127.0.0.1 --port 4321',
-    cwd: web,
-    url: 'http://127.0.0.1:4321',
+    command,
+    cwd: app,
+    url: `http://127.0.0.1:${port}`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },
