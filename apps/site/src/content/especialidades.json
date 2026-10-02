@@ -1,10 +1,66 @@
 [
-  {"id":"dermatologia","nombre":"Dermatología","imagen":"1","fuente":"VERIFICADO"},
-  {"id":"ginecologia","nombre":"Ginecología","imagen":"2","fuente":"VERIFICADO"},
-  {"id":"pediatria","nombre":"Pediatría","imagen":"3","fuente":"VERIFICADO"},
-  {"id":"endocrinologia","nombre":"Endocrinología","imagen":"4","fuente":"VERIFICADO"},
-  {"id":"medicina-interna","nombre":"Medicina Interna","imagen":"5","fuente":"VERIFICADO"},
-  {"id":"gastroenterologia","nombre":"Gastroenterología","imagen":"6","fuente":"VERIFICADO"},
-  {"id":"neuropsiquiatria","nombre":"Neuropsiquiatría","imagen":"7","fuente":"VERIFICADO"},
-  {"id":"reumatologia","nombre":"Reumatología","imagen":"8","fuente":"VERIFICADO"}
+  {
+    "id": "dermatologia",
+    "nombre": "Dermatología",
+    "imagen": "dermatologia",
+    "fuente": "VERIFICADO",
+    "resumen": "Estudia la salud de la piel y sus alteraciones. El dermatólogo evalúa cada caso y define el tratamiento que corresponde.",
+    "imagenAlt": "Evaluación ilustrativa de la piel del antebrazo con un dermatoscopio"
+  },
+  {
+    "id": "ginecologia",
+    "nombre": "Ginecología",
+    "imagen": "ginecologia",
+    "fuente": "VERIFICADO",
+    "resumen": "Se ocupa de la salud del sistema reproductor femenino y de su cuidado en distintas etapas de la vida.",
+    "imagenAlt": "Conversación ilustrativa sobre salud femenina en una consulta"
+  },
+  {
+    "id": "pediatria",
+    "nombre": "Pediatría",
+    "imagen": "pediatria",
+    "fuente": "VERIFICADO",
+    "resumen": "Acompaña la salud y el desarrollo desde la infancia hasta la adolescencia, atendiendo las necesidades propias de cada etapa.",
+    "imagenAlt": "Control pediátrico ilustrativo con un niño acompañado por un adulto"
+  },
+  {
+    "id": "endocrinologia",
+    "nombre": "Endocrinología",
+    "imagen": "endocrinologia",
+    "fuente": "VERIFICADO",
+    "resumen": "Estudia las hormonas y el metabolismo, así como las alteraciones que pueden afectar su equilibrio y funcionamiento.",
+    "imagenAlt": "Orientación ilustrativa sobre el control de la glucosa"
+  },
+  {
+    "id": "medicina-interna",
+    "nombre": "Medicina Interna",
+    "imagen": "medicina-interna",
+    "fuente": "VERIFICADO",
+    "resumen": "Aborda la salud de las personas adultas de forma integral, con evaluación y seguimiento de distintos problemas médicos.",
+    "imagenAlt": "Control ilustrativo de la presión arterial de una persona adulta"
+  },
+  {
+    "id": "gastroenterologia",
+    "nombre": "Gastroenterología",
+    "imagen": "gastroenterologia",
+    "fuente": "VERIFICADO",
+    "resumen": "Se centra en la salud del sistema digestivo y en la evaluación de las alteraciones que afectan su funcionamiento.",
+    "imagenAlt": "Explicación ilustrativa de la salud digestiva con un modelo de estómago"
+  },
+  {
+    "id": "neuropsiquiatria",
+    "nombre": "Neuropsiquiatría",
+    "imagen": "neuropsiquiatria",
+    "fuente": "VERIFICADO",
+    "resumen": "Integra la neurología y la psiquiatría para estudiar la relación entre el funcionamiento del cerebro, la conducta y la salud mental.",
+    "imagenAlt": "Conversación ilustrativa sobre salud mental en un entorno tranquilo"
+  },
+  {
+    "id": "reumatologia",
+    "nombre": "Reumatología",
+    "imagen": "reumatologia",
+    "fuente": "VERIFICADO",
+    "resumen": "Evalúa las enfermedades que afectan las articulaciones y otros tejidos del sistema musculoesquelético, como músculos y tejido conectivo.",
+    "imagenAlt": "Evaluación ilustrativa de la movilidad de la muñeca y los dedos"
+  }
 ]

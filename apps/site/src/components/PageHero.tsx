@@ -6,24 +6,27 @@ interface PageHeroProps {
   description: string;
   image: string;
   imageAlt: string;
+  imageSrcSet?: string;
+  breadcrumbs?: ReactNode;
   chapter: string;
-  variant?: 'split' | 'wide' | 'compact';
+  variant?: 'split' | 'wide' | 'compact' | 'specialty';
   actions?: ReactNode;
 }
 
 /** Encabezado editorial compartido; la foto conserva una altura estable durante la carga. */
-export default function PageHero({ eyebrow, title, description, image, imageAlt, chapter, variant = 'split', actions }: PageHeroProps) {
+export default function PageHero({ eyebrow, title, description, image, imageAlt, imageSrcSet, breadcrumbs, chapter, variant = 'split', actions }: PageHeroProps) {
   return (
     <section className={`internal-hero internal-hero--${variant}`} data-chapter={chapter}>
       <div className="container internal-hero-grid">
         <div className="internal-hero-copy">
+          {breadcrumbs}
           <p className="internal-eyebrow">{eyebrow}</p>
           <h1>{title}</h1>
           <p className="internal-hero-description">{description}</p>
           {actions && <div className="hero-actions">{actions}</div>}
         </div>
         <div className="internal-hero-media">
-          <img src={image} alt={imageAlt} width="1600" height="800" fetchPriority="high" />
+          <img src={image} srcSet={imageSrcSet} sizes={imageSrcSet ? '(min-width: 1100px) 45vw, (min-width: 800px) 50vw, 100vw' : undefined} alt={imageAlt} width="1600" height="800" fetchPriority="high" />
         </div>
       </div>
     </section>

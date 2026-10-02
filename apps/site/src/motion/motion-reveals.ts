@@ -94,6 +94,7 @@ export function bindReveals({ mode, fresh = false }: RevealOptions): () => void 
       servicios: { x: 30, y: 8, scale: 1.025 },
       noticias: { x: -26, y: 0, scale: 1.015 },
       contacto: { x: 0, y: 24, scale: .98 },
+      especialidades: { x: 20, y: 8, scale: 1.015 },
     };
     const direction = directions[chapter];
     if (!direction) return;

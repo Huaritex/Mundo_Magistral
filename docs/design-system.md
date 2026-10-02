@@ -28,4 +28,8 @@ En tablet y móvil el texto antecede a la imagen. El CTA principal debe aparecer
 
 Las secciones combinan reglas finas, números tipográficos y amplios márgenes en vez de cajas genéricas. El CTA final y la cita de filosofía usan tinta violeta profunda; el resto alterna blanco y porcelana. Las tarjetas de servicios priorizan imagen, título y enlace. El localizador de Contacto usa botones de 44 px, estado `aria-pressed`, direcciones siempre visibles y datos de `sedes.json`.
 
+Las ocho sedes ofrecen `Ver en Google Maps` en Contacto, el directorio y el detalle. Los enlaces directos fueron proporcionados por el cliente y se guardan en `sedes.json`; abren una pestaña externa. Las acciones se acomodan en varias líneas cuando falta espacio, conservando las áreas táctiles existentes.
+
 Al navegar a una página interna con GSAP listo, el hero entra en unos 600 ms: el título asciende sin perder opacidad, el texto y las acciones se escalonan, y la foto llega con una dirección propia de cada destino. La navegación cambia de ruta inmediatamente; se omite el snapshot nativo para que no tape el DOM animado. Si GSAP aún no cargó, la transición nativa de 320 ms mantiene continuidad. Ambas rutas respetan movimiento reducido. Ninguna página interna depende del Stage 3D para comunicar información.
+
+Las ocho páginas de especialidad reutilizan `PageHero`: resumen informativo propio, fotografía editorial en 1600/720 px, breadcrumb y acceso a cotización. Sus nombres largos usan una escala ajustada para caber desde 360 px. Servicios mantiene los enlaces directos a cada detalle y una fotografía propia en su tarjeta de Especialidades. Fuentes de los resúmenes y alcance de las imágenes en `docs/especialidades.md`.

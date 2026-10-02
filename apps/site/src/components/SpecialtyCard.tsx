@@ -6,7 +6,7 @@ export default function SpecialtyCard({ item }: { item: { id: string; nombre: st
     <Link className="specialty-card" to={`/especialidades/${item.id}`}>
       {/* view-transition-name equivale al transition:name de Astro (elemento compartido lista → detalle). */}
       <span className="specialty-photo" style={{ viewTransitionName: `specialty-${item.id}` }}>
-        <img src={`/media/especialidades/${item.imagen}.webp`} alt="" width={300} height={160} loading="lazy" decoding="async" />
+        <img src={`/media/especialidades/${item.imagen}.webp`} srcSet={`/media/especialidades/${item.imagen}-720.webp 720w, /media/especialidades/${item.imagen}.webp 1600w`} sizes="(min-width: 700px) 25vw, 50vw" alt="" width={1600} height={1067} loading="lazy" decoding="async" />
       </span>
       <span className="specialty-name">{item.nombre}</span>
     </Link>

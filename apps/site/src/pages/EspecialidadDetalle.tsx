@@ -3,7 +3,9 @@ import { Seo, useCanonical } from '../components/Seo';
 import { especialidades } from '../content/data';
 import { absoluteUrl } from '../lib/site';
 import { Component as NotFound } from './NotFound';
-// PROPUESTO: descripción editorial general; solo el nombre de la especialidad y la definición magistral son VERIFICADOS.
+import PageHero from '../components/PageHero';
+import { verifiedCopy } from '../content/data';
+// Resúmenes informativos generales: fuentes documentadas en docs/especialidades.md.
 
 export function getStaticPaths() { return especialidades.map((item) => `especialidades/${item.id}`); }
 
@@ -23,24 +25,25 @@ export function Component() {
   };
   return (
     <>
-      <Seo page="especialidades" title={`${item.nombre}: preparados magistrales`} description={`MundoMagistral atiende consultas de ${item.nombre.toLowerCase()} relacionadas con preparados magistrales bajo prescripción médica en Bolivia.`} schema={schema} ogImage={`/media/og/especialidad-${item.id}.webp`} />
-      <section className="page-hero specialty-detail-hero light" data-chapter="especialidades">
-        <div className="container specialty-detail-grid">
-          <div>
-            <nav className="breadcrumbs" aria-label="Ruta de navegación"><ol><li><Link to="/">Inicio</Link></li><li><Link to="/especialidades">Especialidades</Link></li><li><span aria-current="page">{item.nombre}</span></li></ol></nav>
-            <h1>{item.nombre}</h1>
-            <p className="lead">Preparados magistrales personalizados según prescripción médica.</p>
-            <div className="hero-actions"><Link className="button button-primary" to="/cotizar">Cotizar receta</Link><Link className="button button-outline-dark" to="/especialidades">Ver especialidades</Link></div>
-          </div>
-          <img className="specialty-detail-image" data-parallax="0.04" src={`/media/especialidades/${item.imagen}.webp`} width={300} height={160} alt={`Imagen ilustrativa de ${item.nombre.toLowerCase()}`} style={{ viewTransitionName: `specialty-${item.id}` }} />
-        </div>
-      </section>
+      <Seo page="especialidades" title={`${item.nombre}: preparados magistrales`} description={item.resumen} schema={schema} ogImage={`/media/especialidades/${item.imagen}.webp`} />
+      <PageHero
+        eyebrow="Especialidades / Cuidado individual"
+        title={item.nombre}
+        description={item.resumen}
+        image={`/media/especialidades/${item.imagen}.webp`}
+        imageSrcSet={`/media/especialidades/${item.imagen}-720.webp 720w, /media/especialidades/${item.imagen}.webp 1600w`}
+        imageAlt={item.imagenAlt}
+        chapter="especialidades"
+        variant="specialty"
+        breadcrumbs={<nav className="breadcrumbs" aria-label="Ruta de navegación"><ol><li><Link to="/">Inicio</Link></li><li><Link to="/especialidades">Especialidades</Link></li><li><span aria-current="page">{item.nombre}</span></li></ol></nav>}
+        actions={<><Link className="button button-primary" to="/cotizar">Cotizar receta <span aria-hidden="true">↗</span></Link><Link className="text-link" to="/especialidades">Ver especialidades <span aria-hidden="true">↗</span></Link></>}
+      />
       <section className="section white">
         <div className="container split">
-          <h2 className="sticky-title">¿Qué define el preparado?</h2>
+          <h2 className="sticky-title">Un preparado a la medida de tu receta.</h2>
           <div className="prose">
             <p className="prose-answer">La receta define el preparado.</p>
-            <p>Una farmacia de preparados magistrales elabora medicamentos personalizados según prescripción médica, adaptados a las necesidades específicas de cada paciente.</p>
+            <p>{verifiedCopy.what}.</p>
             <p>Envíanos tu receta para revisar la solicitud. No se puede confirmar una formulación únicamente por la especialidad.</p>
             <Link className="text-link" to="/cotizar">Enviar receta para cotización</Link>
           </div>
