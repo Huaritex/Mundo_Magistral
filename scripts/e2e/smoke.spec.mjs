@@ -46,7 +46,7 @@ test('el hero avanza cada 2,5 segundos, vuelve a la primera y respeta movimiento
   await page.locator('.hero-dots button').nth(4).click();
   await expect(page.locator('.hero-dots button').first()).toHaveAttribute('aria-current', 'true', { timeout: 4_000 });
   await page.goto('/?tier=1&rm=1');
-  await expect(page.locator('.home-hero')).toHaveAttribute('data-reduced', 'true');
+  await expect(page.locator('section.home-hero[data-chapter="hero"]')).toHaveAttribute('data-reduced', 'true');
   await expect(page.locator('.hero-progress')).toBeHidden();
   await expect(page.locator('.hero-dots button').first()).toHaveAttribute('aria-current', 'true');
   await page.locator('.hero-dots button').nth(4).click();
