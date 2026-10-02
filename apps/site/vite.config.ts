@@ -19,7 +19,7 @@ function listRoutes(dir: string, root = dir): string[] {
 
 /** Sitemap equivalente al de @astrojs/sitemap (sitemap-index.xml → sitemap-0.xml). */
 function writeSitemap(dir: string) {
-  const urls = listRoutes(dir).sort();
+  const urls = listRoutes(dir).filter((route) => route !== '/nosotros').sort();
   const body = urls.map((route) => `<url><loc>${SITE}${route}</loc></url>`).join('');
   writeFileSync(join(dir, 'sitemap-0.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>`);
   writeFileSync(join(dir, 'sitemap-index.xml'), `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><sitemap><loc>${SITE}/sitemap-0.xml</loc></sitemap></sitemapindex>`);

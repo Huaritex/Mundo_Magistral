@@ -76,4 +76,15 @@
 
   --ease-out: cubic-bezier(.16, 1, .3, 1);
   --dur-ui: .2s;
+  /* Roles compartidos para superficies y movimiento editorial. */
+  --brand-primary: var(--violet);
+  --brand-primary-dark: var(--violet-deep);
+  --brand-accent: var(--teal);
+  --surface: var(--paper);
+  --surface-elevated: var(--porcelain);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-2);
+  --border-subtle: var(--line);
+  --dur-standard: .3s;
+  --dur-image: .65s;
 }

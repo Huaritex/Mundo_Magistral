@@ -6,7 +6,12 @@ import { resolve } from 'node:path';
 // Los tests de Stage verifican la identidad del nodo <canvas id="stage" /> (sin tocar su contexto WebGL) y
 // cuentan frames con window.__mmFrames (StageCanvas).
 
-const pages = ['/', '/nosotros', '/formas-farmaceuticas', '/sucursales/la-paz', '/cotizar'];
+const pages = ['/', '/quienes-somos', '/equipo', '/servicios', '/noticias', '/contacto', '/formas-farmaceuticas', '/sucursales/la-paz', '/cotizar'];
+
+// La presentación inicial tiene su propia suite; estas pruebas recorren el sitio ya disponible.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('mundo-magistral-intro-seen', '1'));
+});
 
 test('contenido y CTA disponibles en las páginas principales', async ({ page }) => {
   for (const path of pages) {
@@ -16,12 +21,44 @@ test('contenido y CTA disponibles en las páginas principales', async ({ page })
   }
 });
 
+test('el hero muestra cinco tarjetas enlazadas sin control de pausa', async ({ page }) => {
+  await page.goto('/?tier=1&rm=0');
+  const hero = page.locator('.home-hero');
+  const dots = hero.locator('.hero-dots button');
+  await expect(dots).toHaveCount(5);
+  await expect(dots.first()).toHaveAttribute('aria-current', 'true');
+  await expect(hero.locator('.hero-play-toggle')).toHaveCount(0);
+  await dots.nth(3).click();
+  await expect(hero.locator('.hero-card-copy.is-active h2')).toContainText('Junto al profesional médico');
+  await expect(hero.locator('.hero-photo.is-active')).toHaveAttribute('src', '/media/hero/acompanamiento.webp');
+  await expect(hero.locator('.hero-card-copy.is-active')).toHaveAttribute('href', '/medicos');
+  await dots.nth(4).click();
+  await expect(hero.locator('.hero-card-copy.is-active h2')).toContainText('Atención en Bolivia');
+  await hero.locator('.hero-card-copy.is-active').click();
+  await expect(page).toHaveURL(/\/contacto$/);
+});
+
+test('el hero avanza cada 2,5 segundos, vuelve a la primera y respeta movimiento reducido', async ({ page }) => {
+  await page.goto('/?tier=1&rm=0');
+  await page.mouse.move(300, 300);
+  await expect.poll(() => page.evaluate(() => document.querySelector('main .hero-progress > span').getAnimations()[0]?.effect?.getTiming().duration)).toBe(2500);
+  await expect(page.locator('.hero-dots button').nth(1)).toHaveAttribute('aria-current', 'true', { timeout: 4_000 });
+  await page.locator('.hero-dots button').nth(4).click();
+  await expect(page.locator('.hero-dots button').first()).toHaveAttribute('aria-current', 'true', { timeout: 4_000 });
+  await page.goto('/?tier=1&rm=1');
+  await expect(page.locator('.home-hero')).toHaveAttribute('data-reduced', 'true');
+  await expect(page.locator('.hero-progress')).toBeHidden();
+  await expect(page.locator('.hero-dots button').first()).toHaveAttribute('aria-current', 'true');
+  await page.locator('.hero-dots button').nth(4).click();
+  await expect(page.locator('.hero-card-copy.is-active h2')).toContainText('Atención en Bolivia');
+});
+
 test('el mismo canvas persiste tras tres navegaciones del cliente', async ({ page }) => {
   await page.goto('/?tier=2');
   await page.waitForSelector('canvas#stage', { state: 'attached', timeout: 15_000 });
   // Solo identidad del nodo: NO llamar getContext() (crearía el contexto con atributos por defecto y competiría con three/R3F).
   await page.evaluate(() => { window.__testCanvas = document.getElementById('stage'); });
-  for (const path of ['/nosotros', '/especialidades', '/formas-farmaceuticas']) {
+  for (const path of ['/quienes-somos', '/servicios', '/noticias']) {
     await page.locator(`header a[href="${path}"]`).first().click();
     await expect(page).toHaveURL(new RegExp(`${path}$`));
     const persists = await page.evaluate(() => {
@@ -40,8 +77,8 @@ test('el Stage sigue dibujando durante la navegación', async ({ page }) => {
     window.__frameHashes = [];
     window.__frameSampler = setInterval(() => { window.__frameHashes.push(window.__mmFrames); }, 75);
   });
-  await page.locator('header a[href="/nosotros"]').first().click();
-  await expect(page).toHaveURL(/\/nosotros$/);
+  await page.locator('header a[href="/quienes-somos"]').first().click();
+  await expect(page).toHaveURL(/\/quienes-somos$/);
   await page.waitForTimeout(450);
   const frames = await page.evaluate(() => {
     clearInterval(window.__frameSampler);
@@ -49,6 +86,50 @@ test('el Stage sigue dibujando durante la navegación', async ({ page }) => {
   });
   expect(frames.length).toBeGreaterThanOrEqual(3);
   expect(new Set(frames).size).toBeGreaterThanOrEqual(3);
+});
+
+test('cada página interna entra con GSAP cuando el runtime está listo', async ({ page }) => {
+  await page.goto('/?tier=1&rm=0');
+  await page.waitForFunction(() => document.documentElement.dataset.gsapNavReady === '1', null, { timeout: 10_000 });
+  for (const [path, title] of [
+    ['/quienes-somos', 'Ciencia, precisión y cuidado en cada fórmula.'],
+    ['/equipo', 'Personas detrás de cada preparación.'],
+    ['/servicios', 'Soluciones magistrales adaptadas a cada necesidad.'],
+    ['/noticias', 'Un espacio para seguir aprendiendo.'],
+    ['/contacto', 'Estamos para ayudarte.'],
+  ]) {
+    await page.evaluate(() => {
+      window.__heroMotionSamples = [];
+      window.__heroMotionTimer = setInterval(() => {
+        const media = document.querySelector('.internal-hero-media');
+        if (media) window.__heroMotionSamples.push({ path: location.pathname, opacity: Number(getComputedStyle(media).opacity) });
+      }, 16);
+    });
+    await page.locator(`header a[href="${path}"]`).first().click();
+    await expect(page).toHaveURL(new RegExp(`${path}$`));
+    await expect(page.locator('.internal-hero h1')).toHaveText(title);
+    await page.waitForTimeout(700);
+    const state = await page.evaluate(() => {
+      clearInterval(window.__heroMotionTimer);
+      return {
+        samples: window.__heroMotionSamples,
+        opacity: getComputedStyle(document.querySelector('.internal-hero-media')).opacity,
+        transform: getComputedStyle(document.querySelector('.internal-hero-media')).transform,
+      };
+    });
+    expect(state.samples.some((sample) => sample.path === path && sample.opacity < .8), `animación de ${path}`).toBe(true);
+    expect(state.opacity).toBe('1');
+    expect(state.transform).toBe('none');
+  }
+});
+
+test('movimiento reducido deja visibles los heroes internos', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/?rm=1');
+  await page.locator('header a[href="/servicios"]').first().click();
+  await expect(page.locator('.internal-hero h1')).toHaveText('Soluciones magistrales adaptadas a cada necesidad.');
+  await expect(page.locator('.internal-hero-media')).toHaveCSS('opacity', '1');
+  await expect(page.locator('.internal-hero-media')).toHaveCSS('transform', 'none');
 });
 
 test('a 360 px cotizar y WhatsApp siguen a un tap durante el scroll', async ({ page }) => {
@@ -70,6 +151,18 @@ test('fallbacks mantienen contenido y guardan capturas para revisión visual', a
     await expect(page.locator('header a[href="/cotizar"]').first()).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath(`home-${query.slice(1).replace('=', '-')}.png`), fullPage: true });
   }
+});
+
+test('tier 1 reproduce el fondo de respaldo y respeta movimiento reducido', async ({ page }) => {
+  await page.goto('/?tier=1&rm=0');
+  const video = page.locator('.stage-loop');
+  await expect(video).toBeVisible();
+  await page.waitForFunction(() => {
+    const loop = document.querySelector('.stage-loop');
+    return loop instanceof HTMLVideoElement && !loop.paused && loop.currentTime > .1;
+  }, null, { timeout: 10_000 });
+  await page.goto('/?rm=1');
+  await expect(video).toBeHidden();
 });
 
 test('cotización entrega ID o guía al paciente a adjuntar en WhatsApp', async ({ page }) => {
@@ -118,7 +211,7 @@ test('sin violaciones axe WCAG A/AA ni de impacto serio o crítico', async ({ pa
   }
 });
 
-test('capturas finales de las cinco rutas a 1440 y 360 px', async ({ page }) => {
+test('capturas finales de las rutas principales a 1440 y 360 px', async ({ page }) => {
   test.setTimeout(180_000);
   const output = resolve('artifacts/design-shots/final');
   await mkdir(output, { recursive: true });

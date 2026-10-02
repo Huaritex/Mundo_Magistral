@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useState, type ReactNode, type RefObject } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigationType } from 'react-router-dom';
 import { bridge, resetScroll } from './bridge';
 import { reducedMotion } from '../lib/motion-pref';
 
@@ -13,11 +13,12 @@ const MotionPage = lazy(() => import('./motion-page'));
 
 export function MotionProvider({ scope }: { scope: RefObject<HTMLElement | null> }) {
   const { key, hash } = useLocation();
+  const navigationType = useNavigationType();
   const [reduce, setReduce] = useState(true); // SSR = hidratación = "sin movimiento"; la preferencia real se lee al montar
   const [idle, setIdle] = useState(false);
 
   // Scroll arriba en cada navegación aunque el runtime aún no exista (idempotente por location.key).
-  useLayoutEffect(() => resetScroll(key, hash), [key, hash]);
+  useLayoutEffect(() => resetScroll(key, hash, navigationType), [key, hash, navigationType]);
 
   // Preferencia (?rm, toggle del footer, SO) → clase global .reduce-motion; mm:motion-preference la actualiza en vivo.
   useEffect(() => {

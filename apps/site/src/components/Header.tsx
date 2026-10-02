@@ -6,15 +6,16 @@ import { normalizePath } from '../lib/site';
 
 const links = [
   { href: '/', label: 'Inicio' },
-  { href: '/nosotros', label: 'Nosotros' },
-  { href: '/especialidades', label: 'Especialidades' },
-  { href: '/formas-farmaceuticas', label: 'Formas farmacéuticas' },
-  { href: '/sucursales', label: 'Sucursales' },
-  { href: '/medicos', label: 'Para médicos' },
+  { href: '/quienes-somos', label: 'Quiénes somos' },
+  { href: '/equipo', label: 'Equipo' },
+  { href: '/servicios', label: 'Servicios' },
+  { href: '/noticias', label: 'Noticias' },
+  { href: '/contacto', label: 'Contacto' },
 ];
 
 const isActive = (href: string, pathname: string) => {
   const path = normalizePath(pathname);
+  if (href === '/quienes-somos' && path === '/nosotros') return true;
   return href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
 };
 
@@ -26,7 +27,7 @@ export default function Header() {
   const root = useRef<HTMLDivElement>(null);
 
   // Núcleo sin GSAP: el menú funciona aunque la capa de animación falle o no exista.
-  // La capa GSAP (isla líquida, roll de labels, menú circular + SplitText, CTA magnético, pulso de WhatsApp) se importa
+  // La capa GSAP (indicador de navegación y menú) se importa
   // en idle y solo sin reduced motion (con reduced motion no descarga GSAP hasta que se desactive la preferencia).
   useEffect(() => {
     const offCore = initHeaderCore();
@@ -73,7 +74,7 @@ export default function Header() {
           <nav className="desktop-nav" aria-label="Navegación principal">
             <span className="nav-pill" aria-hidden="true"></span>
             {links.slice(1).map((link) => (
-              <Link key={link.href} to={link.href} aria-current={current(link.href)}><span className="lbl"><span className="lbl-a">{link.label}</span><span className="lbl-b" aria-hidden="true">{link.label}</span></span></Link>
+              <Link key={link.href} to={link.href} aria-current={current(link.href)}>{link.label}</Link>
             ))}
           </nav>
           <div className="cta-zone"><Link className="button button-primary header-cta" to="/cotizar">Cotizar receta</Link></div>

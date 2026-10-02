@@ -36,6 +36,7 @@ function Bridge({ tier }: { tier: 2 | 3 }) {
       canvas.style.opacity = '0';
       poster()?.style.setProperty('opacity', '1');
       document.documentElement.dataset.stageTier = '1';
+      store.setTier(1);
       document.dispatchEvent(new Event('mm:stage-lost'));
     };
     addEventListener('pointermove', onMove, { passive: true });

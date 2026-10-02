@@ -30,7 +30,11 @@ export default function Footer() {
           <p>Cada fórmula es única, como cada paciente.</p>
         </div>
         <nav aria-label="Enlaces del pie de página" className="footer-links">
-          <Link to="/nosotros">Nosotros</Link>
+          <Link to="/quienes-somos">Quiénes somos</Link>
+          <Link to="/equipo">Equipo</Link>
+          <Link to="/servicios">Servicios</Link>
+          <Link to="/noticias">Noticias</Link>
+          <Link to="/contacto">Contacto</Link>
           <Link to="/especialidades">Especialidades</Link>
           <Link to="/formas-farmaceuticas">Formas farmacéuticas</Link>
           <Link to="/sucursales">Sucursales</Link>

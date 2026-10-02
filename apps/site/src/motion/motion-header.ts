@@ -1,5 +1,5 @@
 import { gsap, SplitText, easeBrand } from './motion-gsap';
-import { isReduced, onReducedChange, setEnhancer } from '../lib/header-core';
+import { isReduced, setEnhancer } from '../lib/header-core';
 
 /**
  * Capa GSAP del header (port de apps/web/src/scripts/motion-header.ts). Se importa dinámicamente en idle desde
@@ -52,9 +52,9 @@ export function enhanceHeader(root: HTMLElement): () => void {
               onInterrupt: resolve,
             });
             running = tl;
-            tl.fromTo(dialog, { clipPath: circle(0, o) }, { clipPath: circle(R, o), duration: 0.9, ease: 'power3.inOut' }, 0)
-              .from(split.lines, { yPercent: 118, duration: 0.95, stagger: 0.065 }, 0.2)
-              .from(parts(), { opacity: 0, y: 14, duration: 0.6, stagger: 0.09 }, 0.34);
+            tl.fromTo(dialog, { clipPath: circle(0, o) }, { clipPath: circle(R, o), duration: 0.58, ease: 'power3.inOut' }, 0)
+              .from(split.lines, { yPercent: 105, duration: 0.55, stagger: 0.035 }, 0.1)
+              .from(parts(), { opacity: 0, y: 8, duration: 0.4 }, 0.2);
           });
         });
       },
@@ -68,10 +68,10 @@ export function enhanceHeader(root: HTMLElement): () => void {
             const tl = gsap.timeline({ onComplete: resolve, onInterrupt: resolve });
             running = tl;
             if (split?.lines.length) {
-              tl.to(split.lines, { yPercent: -112, duration: fast ? 0.3 : 0.42, ease: 'power3.in', stagger: { each: 0.03, from: 'end' } }, 0);
+              tl.to(split.lines, { yPercent: -105, duration: fast ? 0.22 : 0.3, ease: 'power3.in', stagger: { each: 0.02, from: 'end' } }, 0);
             }
-            tl.to(parts(), { opacity: 0, duration: 0.25, ease: 'power1.in' }, 0)
-              .to(dialog, { clipPath: circle(0, o), duration: fast ? 0.45 : 0.62, ease: 'power3.inOut' }, fast ? 0.08 : 0.16);
+            tl.to(parts(), { opacity: 0, duration: 0.2, ease: 'power1.in' }, 0)
+              .to(dialog, { clipPath: circle(0, o), duration: fast ? 0.32 : 0.42, ease: 'power3.inOut' }, fast ? 0.04 : 0.1);
           });
         });
       },
@@ -144,59 +144,6 @@ export function enhanceHeader(root: HTMLElement): () => void {
       gsap.set(pill, { clearProps: 'opacity,clipPath' });
     };
   });
-
-  /* ---------- 3. CTA magnético (solo puntero fino, radio corto) ---------- */
-  mm.add('(min-width: 1150px) and (hover: hover) and (pointer: fine)', () => {
-    const cta = header.querySelector<HTMLElement>('.header-cta');
-    const zone = header.querySelector<HTMLElement>('.cta-zone');
-    if (!cta || !zone) return;
-    const xTo = gsap.quickTo(cta, 'x', { duration: 0.55, ease: 'power3' });
-    const yTo = gsap.quickTo(cta, 'y', { duration: 0.55, ease: 'power3' });
-    const clamp = (v: number, m: number) => Math.max(-m, Math.min(m, v));
-    const move = (e: PointerEvent) => {
-      if (isReduced()) return;
-      const r = zone.getBoundingClientRect(); // la zona no se transforma: referencia estable
-      xTo(clamp((e.clientX - (r.left + r.width / 2)) * 0.24, 8));
-      yTo(clamp((e.clientY - (r.top + r.height / 2)) * 0.32, 5));
-    };
-    // El listener de pointermove solo existe mientras el puntero está dentro de la zona.
-    const enter = () => zone.addEventListener('pointermove', move);
-    const out = () => { zone.removeEventListener('pointermove', move); xTo(0); yTo(0); };
-    zone.addEventListener('pointerenter', enter);
-    zone.addEventListener('pointerleave', out);
-    return () => {
-      zone.removeEventListener('pointerenter', enter);
-      zone.removeEventListener('pointerleave', out);
-      zone.removeEventListener('pointermove', move);
-      gsap.killTweensOf(cta);
-      gsap.set(cta, { clearProps: 'transform' });
-    };
-  });
-
-  /* ---------- 4. WhatsApp: pulso discreto cada ~5 s ---------- */
-  const ring = document.querySelector<HTMLElement>('.floating-wa .wa-ring');
-  const icon = document.querySelector<HTMLElement>('.floating-wa svg');
-  if (ring) {
-    ctx.add(() => {
-      const pulse = gsap.timeline({ repeat: -1, paused: true });
-      pulse.to({}, { duration: 3.6 })
-        .fromTo(ring, { scale: 1, opacity: 0.6 }, { scale: 1.5, opacity: 0, duration: 1.3, ease: 'power2.out', immediateRender: false })
-        .fromTo(icon, { scale: 1 }, { scale: 1.12, duration: 0.22, ease: 'power2.out', yoyo: true, repeat: 1, immediateRender: false }, '<');
-      const sync = () => {
-        if (isReduced() || document.hidden) pulse.progress(1).pause();
-        else pulse.restart();
-      };
-      document.addEventListener('visibilitychange', sync);
-      const offReduced = onReducedChange(sync);
-      sync();
-      cleanups.push(() => {
-        document.removeEventListener('visibilitychange', sync);
-        offReduced();
-        pulse.kill();
-        gsap.set([ring, icon], { clearProps: 'transform,opacity' });
-      });
-    });
-  }
 
   return () => {
     cleanups.forEach((fn) => { try { fn(); } catch { /* nodo ya retirado */ } });

@@ -10,6 +10,11 @@ export const routes: RouteRecord[] = [
     children: [
       { index: true, lazy: () => import('./pages/Home') },
       { path: 'nosotros', lazy: () => import('./pages/Nosotros') },
+      { path: 'quienes-somos', lazy: () => import('./pages/Nosotros') },
+      { path: 'equipo', lazy: () => import('./pages/Equipo') },
+      { path: 'servicios', lazy: () => import('./pages/Servicios') },
+      { path: 'noticias', lazy: () => import('./pages/Noticias') },
+      { path: 'contacto', lazy: () => import('./pages/Contacto') },
       { path: 'especialidades', lazy: () => import('./pages/Especialidades') },
       { path: 'especialidades/:slug', lazy: () => import('./pages/EspecialidadDetalle') },
       { path: 'formas-farmaceuticas', lazy: () => import('./pages/FormasFarmaceuticas') },

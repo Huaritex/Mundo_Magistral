@@ -2,26 +2,6 @@
    puntos guía para cantidades, etiqueta de preparado para sedes, numeración solo en el proceso. */
 
 @layer pages {
-  /* ================= Home: hero =================
-     El Stage 3D (logo: globo dentro del mortero) es el protagonista: la capa del hero es transparente y solo lleva un velo
-     blanco detrás del texto (el logo queda a la derecha en pantallas anchas). Sin decoración CSS que imite al 3D. */
-  .home-hero { --veil: 0; position: relative; isolation: isolate; display: flex; align-items: flex-end; min-height: max(700px, 100svh); padding-block: calc(var(--header-h) + 2.5rem) clamp(5.5rem, 8vw, 6rem); background: transparent; overflow: clip; }
-  .home-hero::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to top, rgb(255 255 255 / .95) 0, rgb(255 255 255 / .86) 50%, rgb(255 255 255 / 0) 90%); }
-  .hero-loop { display: none; position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; max-width: none; object-fit: cover; pointer-events: none; }
-  html[data-stage-tier='1']:not(.reduce-motion) .hero-loop { display: block; }
-  .home-hero-copy { max-width: 46rem; }
-  .home-hero h1 { font-size: var(--t-display); line-height: .98; letter-spacing: -.022em; margin-bottom: var(--s-5); }
-  .home-hero .lead { max-width: 46ch; margin-bottom: var(--s-6); color: var(--ink-2); }
-  .hero-paths { display: flex; flex-wrap: wrap; margin: var(--s-6) 0 0; padding: 0; list-style: none; }
-  .hero-paths li + li { margin-left: 1.25rem; padding-left: 1.25rem; border-left: 1px solid var(--line-rule); }
-  .hero-paths a { color: var(--violet); }
-  .hero-paths a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; text-underline-offset: .28em; text-decoration-thickness: 1px; }
-  .hero-paths a:hover { text-decoration-thickness: 2px; }
-  @media (min-width: 900px) {
-    .home-hero { align-items: center; }
-    .home-hero::before { background: linear-gradient(90deg, rgb(255 255 255 / .95) 0, rgb(255 255 255 / .88) 36%, rgb(255 255 255 / .3) 58%, rgb(255 255 255 / 0) 78%), linear-gradient(to top, rgb(255 255 255 / .6), rgb(255 255 255 / 0) 22%); }
-  }
-
   /* Veles de las secciones claras que tienen un objeto 3D justo detrás del texto corrido: más firmes para que el objeto sea una sombra y no ruido. */
   .section[data-chapter='mision'], .section[data-chapter='vision'], .section[data-chapter='medicos'] { --veil-l: .88; }
   .section[data-chapter='historia'] { --veil-l: .8; }

@@ -6,6 +6,7 @@ import crimsonFont from '@fontsource-variable/crimson-pro/files/crimson-pro-lati
 import Header from './components/Header';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
+import IntroGate from './components/intro/IntroGate';
 import { MotionProvider, PageScope } from './motion/MotionProvider';
 import { centralTel } from './content/data';
 import { absoluteUrl } from './lib/site';
@@ -18,16 +19,21 @@ const StageHost = lazy(() => import('./stage/StageHost'));
 
 const organization = { '@context': 'https://schema.org', '@type': 'Organization', name: 'Farmacia MundoMagistral S.R.L.', url: absoluteUrl('/'), telephone: centralTel };
 
-/** true solo tras montar en cliente (evita cualquier render del Stage en SSR/hidratación). */
-function useClientMounted(): boolean {
+/** El Stage se descarga después de montar y de liberar la intro; no compite con sus 3,65 s. */
+function useStageReady(): boolean {
   const [ready, setReady] = useState(false);
-  useEffect(() => setReady(true), []);
+  useEffect(() => {
+    const update = () => setReady(document.documentElement.dataset.mmIntroActive !== '1');
+    update();
+    document.addEventListener('mm:intro-state', update);
+    return () => document.removeEventListener('mm:intro-state', update);
+  }, []);
   return ready;
 }
 
 export default function Layout() {
   const { pathname, hash } = useLocation();
-  const stageReady = useClientMounted();
+  const stageReady = useStageReady();
   const main = useRef<HTMLElement>(null);
 
   // Fuente display fuera de la ruta crítica (ver lib/fonts.ts).
@@ -45,17 +51,21 @@ export default function Layout() {
         <link rel="preload" href={outfitFont} as="font" type="font/woff2" crossOrigin="" />
         <script type="application/ld+json">{JSON.stringify(organization)}</script>
       </Head>
-      <a className="skip-link" href="#main">Ir al contenido</a>
-      <Link className="skip-link skip-quote" to="/cotizar">Ir a cotizar receta</Link>
+      <nav aria-label="Atajos de navegación">
+        <a className="skip-link" href="#main">Ir al contenido</a>
+        <Link className="skip-link skip-quote" to="/cotizar">Ir a cotizar receta</Link>
+      </nav>
       <div className="stage-backdrop" aria-hidden="true">
-        <img id="stage-poster" src="/media/poster-hero.avif" width={1080} height={486} alt="" fetchPriority="high" />
+        <img id="stage-poster" src="/media/poster-hero.avif" width={1080} height={486} alt="" fetchPriority={pathname === '/' ? 'low' : 'high'} />
+        <video className="stage-loop" data-hero-loop="" muted loop playsInline preload="none" poster="/media/poster-hero.avif" aria-hidden="true" />
         {stageReady && <Suspense fallback={null}><StageHost /></Suspense>}
       </div>
       <Header />
       <MotionProvider scope={main} />
       <main id="main" ref={main}><PageScope key={pathname}><Outlet /></PageScope></main>
       <Footer />
-      <FloatingWhatsApp />
+      <aside aria-label="Contacto por WhatsApp"><FloatingWhatsApp /></aside>
+      <IntroGate />
     </>
   );
 }

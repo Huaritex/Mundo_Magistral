@@ -1,5 +1,4 @@
 import { gsap, ScrollTrigger, SplitText, easeBrand } from './motion-gsap';
-import { bindMagnetic } from './motion-interactions';
 import { reducedMotion } from '../lib/motion-pref';
 import { store } from '../stage/store';
 
@@ -68,9 +67,7 @@ export function bindReveals({ mode, fresh = false }: RevealOptions): () => void 
     const hero = $('.home-hero');
     const copy = $('.home-hero-copy');
     if (hero && copy) {
-      const h1 = $('h1', copy);
-      // Solo si la página acaba de montarse: en la primera carga el bind llega tras el idle y el H1 ya se pintó (LCP).
-      if (h1 && fresh) lineReveal(h1, { delay: .1, clearProps: 'transform' });
+      // Home tiene entrada CSS inmediata; duplicarla al cargar GSAP en idle produce un segundo salto.
       gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } })
         .to(copy, { yPercent: -14, scale: .94, opacity: 0, transformOrigin: '0% 60%', ease: 'power1.in' }, 0);
       return;
@@ -82,6 +79,35 @@ export function bindReveals({ mode, fresh = false }: RevealOptions): () => void 
       gsap.timeline({ scrollTrigger: { trigger: pageHero.parentElement, start: 'top top', end: 'bottom top', scrub: true } })
         .to(pageHero, { yPercent: -8, opacity: .15, ease: 'power1.in' }, 0);
     }
+  });
+
+  /* Entrada al navegar a páginas internas. El H1 conserva opacidad; solo se desplaza unos píxeles.
+     Cada destino varía la dirección de su fotografía, con una misma cadencia editorial. */
+  safe('internal-navigation', () => {
+    if (!fresh) return;
+    const hero = $('.internal-hero');
+    if (!hero || hero.getBoundingClientRect().bottom <= 0) return;
+    const chapter = hero.dataset.chapter ?? '';
+    const directions: Record<string, { x: number; y: number; scale: number }> = {
+      historia: { x: 30, y: 0, scale: .98 },
+      equipo: { x: 0, y: 26, scale: 1.025 },
+      servicios: { x: 30, y: 8, scale: 1.025 },
+      noticias: { x: -26, y: 0, scale: 1.015 },
+      contacto: { x: 0, y: 24, scale: .98 },
+    };
+    const direction = directions[chapter];
+    if (!direction) return;
+    const eyebrow = $('.internal-hero-copy > .internal-eyebrow', hero);
+    const heading = $('h1', hero);
+    const description = $('.internal-hero-description', hero);
+    const actions = $$('.hero-actions > *', hero);
+    const media = $('.internal-hero-media', hero);
+    const timeline = gsap.timeline({ defaults: { ease: easeBrand } });
+    if (eyebrow) timeline.from(eyebrow, { y: 10, autoAlpha: 0, duration: .3, clearProps: 'transform,opacity,visibility' }, 0);
+    if (heading) timeline.from(heading, { y: 18, duration: .46, clearProps: 'transform' }, .035);
+    if (description) timeline.from(description, { y: 12, autoAlpha: 0, duration: .38, clearProps: 'transform,opacity,visibility' }, .1);
+    if (actions.length) timeline.from(actions, { y: 10, autoAlpha: 0, duration: .34, stagger: .055, clearProps: 'transform,opacity,visibility' }, .18);
+    if (media) timeline.from(media, { ...direction, autoAlpha: 0, duration: .58, clearProps: 'transform,opacity,visibility' }, .06);
   });
 
   /* ---- b. ¿Qué es una farmacia magistral?: la respuesta se ilumina palabra por palabra ---- */
@@ -272,7 +298,6 @@ export function bindReveals({ mode, fresh = false }: RevealOptions): () => void 
     lineReveal(phrase, { duration: 1, scrollTrigger: { trigger: phrase, start: 'clamp(top 92%)', once: true } }, 'none');
   });
 
-  if (full) safe('magnetico', () => { restores.push(bindMagnetic()); });
   ScrollTrigger.sort();
 
   // Los saltos de línea de SplitText/fuentes cambian posiciones: un refresh cuando las fuentes estén listas y otro cuando lib/fonts.ts

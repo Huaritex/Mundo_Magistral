@@ -14,7 +14,11 @@ export const bridge: {
 /** Capítulo del Stage por ruta al navegar (mismo mapa que apps/web/src/scripts/lifecycle.ts → chapterForUrl). */
 export function chapterForPath(path: string): string {
   if (path === '/') return 'hero';
-  if (path.startsWith('/nosotros')) return 'historia';
+  if (path.startsWith('/nosotros') || path.startsWith('/quienes-somos')) return 'historia';
+  if (path.startsWith('/equipo')) return 'filosofia';
+  if (path.startsWith('/servicios')) return 'especialidades';
+  if (path.startsWith('/noticias')) return 'filosofia';
+  if (path.startsWith('/contacto')) return 'sedes';
   if (path.startsWith('/especialidades')) return 'especialidades';
   if (path.startsWith('/formas')) return 'formas';
   if (path.startsWith('/sucursales')) return 'sedes';
@@ -30,7 +34,7 @@ let lastKey: string | undefined;
  * en el mismo commit; gana el primero, que debe correr antes de crear los ScrollTrigger). La carga inicial no hace scroll.
  * Con hash se lleva al elemento; con Lenis activo se usa su API para no pelear con la inercia.
  */
-export function resetScroll(key: string, hash: string): void {
+export function resetScroll(key: string, hash: string, action: 'POP' | 'PUSH' | 'REPLACE' = 'PUSH'): void {
   if (lastKey === undefined) { lastKey = key; return; }
   if (lastKey === key) return;
   lastKey = key;
@@ -38,6 +42,8 @@ export function resetScroll(key: string, hash: string): void {
     document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView();
     return;
   }
+  // En historial dejamos que el navegador restaure la posición previa.
+  if (action === 'POP') return;
   if (bridge.lenis) bridge.lenis.scrollTo(0, { immediate: true, force: true });
   else window.scrollTo(0, 0);
 }

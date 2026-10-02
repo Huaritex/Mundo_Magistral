@@ -1,0 +1,103 @@
+/* Una presentación de marca breve; la portada ya está montada detrás. */
+@layer motion {
+  .intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    width: 100vw;
+    height: 100dvh;
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--on-dark);
+    background: var(--ink);
+    clip-path: inset(0% 0% 0% 0%);
+    animation: intro-fail-open 4.2s step-end forwards;
+  }
+  @keyframes intro-fail-open { to { visibility: hidden; pointer-events: none; } }
+  .intro-overlay[data-intro-debug='true'] { animation: none; }
+  html[data-mm-intro-seen='1']:not([data-mm-intro-active='1']) .intro-overlay { display: none; }
+  .intro-visuals, .intro-science, .intro-editorial, .intro-brand { position: absolute; inset: 0; }
+  .intro-visuals { pointer-events: none; }
+  .intro-science, .intro-brand { background: var(--ink); }
+  .intro-grid { position: absolute; inset: 0; opacity: .12; background-image: linear-gradient(var(--on-dark) 1px, transparent 1px), linear-gradient(90deg, var(--on-dark) 1px, transparent 1px); background-size: 12.5vw 12.5vw; mask-image: linear-gradient(135deg, transparent 5%, var(--ink) 65%); }
+  .intro-corner { position: absolute; left: 7vw; margin: 0; font: 500 clamp(.7rem, .8vw, .85rem)/1.4 var(--font-ui); letter-spacing: .09em; text-transform: uppercase; }
+  .intro-corner-top { top: max(40px, 6vh); }
+  .intro-corner-bottom { bottom: max(32px, 6vh); }
+  .intro-status-dot { display: inline-block; width: 7px; height: 7px; margin-right: 10px; border-radius: 50%; background: var(--teal); }
+  .intro-rule { position: absolute; top: 29%; left: 7vw; width: 56vw; height: 1px; background: var(--line-dark); transform: scaleX(0); transform-origin: left center; }
+  .intro-word-mask { position: absolute; z-index: 2; top: 36%; left: 7vw; width: 90%; overflow: hidden; padding-bottom: .08em; }
+  .intro-word { margin: 0; font: 580 clamp(4rem, 12.4vw, 13rem)/.97 var(--font-ui); letter-spacing: -.065em; white-space: nowrap; }
+  .intro-precision-word { opacity: 0; }
+  .intro-word-dot { color: var(--teal); }
+  .intro-target { position: absolute; width: min(35vw, 460px); right: 5vw; top: 50%; translate: 0 -50%; stroke: var(--on-dark); stroke-width: .65; opacity: .25; }
+  .intro-target-accent { stroke: var(--teal); stroke-width: 1.5; }
+  .intro-chapter { position: absolute; right: 7vw; bottom: max(32px, 6vh); font-size: .75rem; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+  .intro-editorial { z-index: 3; visibility: hidden; background: var(--porcelain); color: var(--ink); }
+  .intro-product { position: absolute; top: 0; right: 0; width: 62%; height: 100%; overflow: hidden; border-left: 1px solid var(--line); }
+  .intro-product img { width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 85% center; }
+  .intro-personal-word { position: absolute; z-index: 2; top: 19%; left: 7vw; font: 600 clamp(3rem, 7.4vw, 8rem)/.96 var(--font-ui); letter-spacing: -.065em; }
+  .intro-formula-card { position: absolute; z-index: 2; left: 7vw; bottom: 14vh; width: 300px; padding: 24px; border: 1px solid var(--line); background: var(--paper); box-shadow: var(--e-paper); }
+  .intro-card-label { display: flex; justify-content: space-between; gap: 16px; margin: 0 0 16px; font-size: .7rem; font-weight: 600; letter-spacing: .045em; text-transform: uppercase; }
+  .intro-card-label span { color: var(--teal-ink); font-size: 1.3em; }
+  .intro-card-rule { width: 100%; height: 1px; background: var(--line-rule); }
+  .intro-formula-card > p:not(.intro-card-label) { margin: 18px 0; font-size: 1.7rem; font-weight: 500; line-height: 1.2; letter-spacing: -.035em; }
+  .intro-card-foot { font-size: .78rem; color: var(--ink-2); }
+  .intro-brand { z-index: 4; visibility: hidden; }
+  .intro-brand-logo { position: absolute; top: 12vh; left: 7vw; width: clamp(180px, 18vw, 240px); padding: 20px; background: var(--paper); border-radius: 12px; }
+  .intro-brand-logo img { display: block; width: 100%; height: auto; }
+  .intro-brand-name { position: absolute; top: calc(12vh + clamp(150px, 15vw, 180px)); left: 7vw; margin: 0; font-size: .85rem; font-weight: 500; letter-spacing: .14em; }
+  .intro-message { position: absolute; z-index: 8; margin: 0; opacity: 0; color: var(--on-dark); text-wrap: balance; }
+  .intro-hero-bridge.home-hero { position: absolute; z-index: 6; min-height: 0; margin: 0; padding: 0; opacity: 0; overflow: visible; background: transparent; }
+  .intro-hero-bridge .hero-shell { width: 100%; height: 100%; min-height: 0; margin: 0; }
+  .intro-hero-bridge h1 { animation: none; }
+  .intro-skip { position: absolute; z-index: 10; top: max(24px, env(safe-area-inset-top)); right: 7vw; display: inline-flex; align-items: center; justify-content: center; gap: 16px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--line-dark); border-radius: var(--r-action); background: var(--ink); color: var(--on-dark); font: 400 .85rem/1.2 var(--font-ui); cursor: pointer; }
+  .intro-skip span { font-size: 1.1rem; }
+  .intro-skip:focus-visible { outline: 2px solid var(--teal); outline-offset: 6px; }
+  html[data-mm-intro-active='1'] .site-header, html[data-mm-intro-active='1'] .floating-wa { opacity: 0; translate: 0 -8px; transition: opacity .4s var(--ease-out), translate .4s var(--ease-out); }
+  html[data-mm-intro-active='1'] .site-header { right: var(--intro-scrollbar-gap, 0px); }
+  html[data-mm-intro-active='1'] .floating-wa { translate: calc(0px - var(--intro-scrollbar-gap, 0px)) -8px; }
+  html[data-mm-intro-exiting='1'] .site-header, html[data-mm-intro-exiting='1'] .floating-wa { opacity: 1; translate: 0 0; }
+  html[data-mm-intro-exiting='1'] .floating-wa { translate: calc(0px - var(--intro-scrollbar-gap, 0px)) 0; }
+  html[data-mm-intro-active='1'] main .home-hero h1 { animation: none; }
+
+  @media (max-width: 850px) {
+    .intro-word-mask { top: 40%; left: 6vw; width: 90%; }
+    .intro-word { font-size: 13vw; }
+    .intro-rule { left: 6vw; top: 32%; width: 88%; }
+    .intro-target { top: 62%; right: 7vw; width: 48vw; }
+    .intro-corner, .intro-personal-word, .intro-formula-card { left: 6vw; }
+    .intro-personal-word { top: 19%; font-size: clamp(3.2rem, 9vw, 5rem); }
+    .intro-formula-card { width: 270px; padding: 20px; bottom: 12vh; }
+    .intro-brand-logo { left: 6vw; top: 18vh; width: 180px; padding: 16px; }
+    .intro-brand-name { left: 6vw; top: calc(18vh + 140px); }
+  }
+  @media (max-width: 600px) {
+    .intro-grid { background-size: 25vw 25vw; }
+    .intro-corner-top { top: max(96px, 11vh); }
+    .intro-corner-bottom { max-width: 22ch; bottom: max(28px, 5vh); font-size: .65rem; }
+    .intro-chapter { bottom: max(28px, 5vh); right: 6vw; font-size: .65rem; }
+    .intro-word-mask { top: 37%; }
+    .intro-science-word { font-size: 20vw; }
+    .intro-precision-word { font-size: 17vw; }
+    .intro-target { top: 66%; width: 62vw; right: 4vw; }
+    .intro-product { top: 34%; left: 0; width: 100%; height: 66%; border-left: 0; border-top: 1px solid var(--line); }
+    .intro-product img { object-position: 77% center; }
+    .intro-personal-word { top: 18%; font-size: clamp(2.75rem, 12.2vw, 4.1rem); }
+    .intro-personal-word > span { display: block; }
+    .intro-formula-card { bottom: 9vh; width: min(270px, 78vw); padding: 18px; }
+    .intro-formula-card > p:not(.intro-card-label) { margin: 12px 0; font-size: 1.25rem; }
+    .intro-card-label { font-size: .62rem; margin-bottom: 12px; }
+    .intro-card-foot { font-size: .7rem; }
+    .intro-editorial .intro-chapter { color: var(--ink); }
+    .intro-skip { right: 6vw; top: max(20px, env(safe-area-inset-top)); font-size: .8rem; }
+  }
+  @media (max-height: 600px) and (min-width: 601px) {
+    .intro-brand-logo { top: 8vh; width: 150px; padding: 12px; }
+    .intro-brand-name { top: calc(8vh + 110px); }
+    .intro-formula-card { bottom: 10vh; padding: 16px; width: 260px; }
+    .intro-formula-card > p:not(.intro-card-label) { font-size: 1.15rem; margin: 12px 0; }
+    .intro-personal-word { top: 22%; }
+  }
+  @media (prefers-reduced-motion: reduce) { .intro-overlay { display: none !important; } }
+  .reduce-motion .intro-overlay { display: none !important; }
+}

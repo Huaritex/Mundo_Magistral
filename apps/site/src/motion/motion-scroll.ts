@@ -90,7 +90,7 @@ export function bindPage({ mode, path, fallbackChapter, fresh }: PageOptions): (
 
     const hero = document.querySelector<HTMLElement>('[data-chapter="hero"] h1, .page-hero h1');
     // H1 = LCP: solo transform (yPercent), nunca opacity.
-    if (hero && hero.getBoundingClientRect().top < innerHeight) {
+    if (hero && !hero.closest('.home-hero') && hero.getBoundingClientRect().top < innerHeight) {
       gsap.fromTo(hero, { yPercent: 5 }, { yPercent: 0, duration: dur.reveal, ease: ease.enter, clearProps: 'transform' });
     }
 

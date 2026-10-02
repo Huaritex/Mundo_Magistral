@@ -7,6 +7,9 @@ import './styles/pages.css';
 import './styles/nav.css';
 import './styles/scroll-motion.css';
 import './styles/transitions.css';
+import './styles/hero.css';
+import './styles/internal.css';
+import './styles/intro.css';
 import '@mm/brand/tokens.css';
 
 // installNavigation (solo cliente): View Transitions nativas en toda navegación entre páginas + eventos de navegación.

@@ -3,7 +3,8 @@ import { Seo } from '../components/Seo';
 import SedeCard from '../components/SedeCard';
 import SpecialtyCard from '../components/SpecialtyCard';
 import Formula from '../components/Formula';
-import { centralWhatsapp, especialidades, formas, sedes, verifiedCopy } from '../content/data';
+import HomeHero from '../components/hero/HomeHero';
+import { especialidades, formas, sedes, verifiedCopy } from '../content/data';
 // PROPUESTO: titulares (cada uno responde una pregunta), textos de proceso e instrucciones de interfaz.
 // VERIFICADO: verifiedCopy, nombres y datos importados, cifras (2019, 7 departamentos, 8 sedes, 8 especialidades).
 
@@ -12,25 +13,7 @@ export function Component() {
     <>
       <Seo page="home" title="Preparados magistrales en Bolivia" description="Farmacia MundoMagistral: preparados magistrales personalizados según prescripción médica. Conoce nuestras 8 sedes en Bolivia y cotiza tu receta." ogImage="/media/og/home.webp" />
 
-      {/* Hero: el Stage 3D (globo dentro del mortero) es la imagen; aquí solo texto sobre un velo de tinta. */}
-      <section className="home-hero light" data-chapter="hero">
-        <video className="hero-loop" data-hero-loop="" muted loop playsInline preload="none" poster="/media/poster-hero.avif" aria-hidden="true"></video>
-        <div className="container">
-          <div className="home-hero-copy">
-            {/* PROPUESTO: titular editorial; requiere aprobación antes de publicación. */}
-            <h1>Del mundo<br />a tu fórmula.</h1>
-            <p className="lead">{verifiedCopy.welcome}</p>
-            <div className="hero-actions">
-              <Link className="button button-primary" to="/cotizar">Cotizar receta</Link>
-              <a className="button button-outline-dark" href={centralWhatsapp} target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a>
-            </div>
-            <ul className="hero-paths" aria-label="Elige tu camino">
-              <li><a href="#que-es">Soy paciente</a></li>
-              <li><Link to="/medicos">Soy médico</Link></li>
-            </ul>
-          </div>
-        </div>
-      </section>
+      <HomeHero />
 
       <section id="que-es" className="section section-question light" data-chapter="que-es" data-pin="">
         <div className="container split">

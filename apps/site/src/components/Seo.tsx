@@ -9,6 +9,7 @@ export interface SeoProps {
   /** Valor de body[data-page] (lo usan los estilos/motion por página). */
   page: string;
   ogImage?: string;
+  canonicalPath?: string;
   schema?: Schema;
 }
 
@@ -16,9 +17,9 @@ export interface SeoProps {
 const ld = (data: Schema) => JSON.stringify(data).replace(/</g, '\\u003c');
 
 /** Head por página: mismo conjunto de etiquetas que layouts/Base.astro. */
-export function Seo({ title, description, page, ogImage = '/media/og-default.webp', schema }: SeoProps) {
+export function Seo({ title, description, page, ogImage = '/media/og-default.webp', canonicalPath, schema }: SeoProps) {
   const { pathname } = useLocation();
-  const canonical = absoluteUrl(normalizePath(pathname));
+  const canonical = absoluteUrl(normalizePath(canonicalPath ?? pathname));
   const imageUrl = absoluteUrl(ogImage);
   const full = `${title} | MundoMagistral`;
   return (

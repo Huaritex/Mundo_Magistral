@@ -155,10 +155,11 @@
   /* ---------- Pie ---------- */
   .site-footer { position: relative; color: var(--ink); background: var(--porcelain); border-top: 1px solid var(--line); padding-top: clamp(2.5rem, 5vw, 4rem); }
   .footer-main { display: grid; gap: var(--s-6); padding-bottom: clamp(2rem, 4vw, 3rem); }
+  .footer-main > * { min-width: 0; }
   /* El logo está pensado para fondo blanco: va directo, sin parche. */
   .footer-brand img { width: 168px; height: auto; }
   .footer-brand p { margin: var(--s-4) 0 0; max-width: 18ch; font-family: var(--font-display); font-weight: 500; font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem); line-height: 1.1; color: var(--violet); }
-  .footer-links { display: grid; grid-template-columns: repeat(2, max-content); justify-content: start; align-content: start; gap: 0 var(--s-6); }
+  .footer-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: start; align-content: start; gap: 0 var(--s-6); }
   .footer-links a { display: inline-flex; align-items: center; width: fit-content; min-height: 44px; text-decoration-color: transparent; text-underline-offset: .25em; }
   .footer-links a:hover { text-decoration-color: currentColor; color: var(--violet-deep); }
   .footer-contact { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-3); }
@@ -170,15 +171,25 @@
   .footer-bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--s-6); padding-block: .5rem; font-size: var(--t-small); }
   .footer-bottom small { font-size: inherit; }
   .motion-toggle { min-height: 44px; padding: 0 .25rem; background: none; color: inherit; border: 0; text-decoration: underline; text-underline-offset: .25em; cursor: pointer; }
-  @media (min-width: 700px) { .footer-main { grid-template-columns: 1.4fr 1fr 1fr; } }
+  @media (min-width: 700px) and (max-width: 1049px) {
+    .footer-main { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+    .footer-brand { grid-column: 1 / -1; }
+  }
+  @media (min-width: 1050px) { .footer-main { grid-template-columns: 1.4fr 1fr 1fr; } }
 
   /* ---------- Stage 3D ---------- */
   .stage-backdrop { position: fixed; inset: 0; z-index: 0; background: var(--paper); pointer-events: none; overflow: hidden; }
   main, .site-footer { position: relative; z-index: 1; }
-  #stage, #stage-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 450ms ease; }
+  #stage, #stage-poster, .stage-loop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 450ms ease; }
   #stage { opacity: 0; }
   /* El póster es el primer fotograma del hero (misma escena, mismo blanco de base): StageCanvas lo funde con el canvas sin salto. */
   #stage-poster { opacity: 1; }
+  /* El video existente cubre el tier 1 sin WebGL; solo se descarga cuando motion-page confirma ese modo. */
+  .stage-loop { display: none; }
+  html[data-stage-tier='1']:not(.reduce-motion) .stage-loop { display: block; }
+  html[data-stage-tier='1']:not(.reduce-motion) .dark { background: rgb(34 22 58 / var(--veil, .78)); }
+  html[data-stage-tier='1']:not(.reduce-motion) .light { background: rgb(242 245 246 / var(--veil-l, .7)); }
+  html[data-stage-tier='1']:not(.reduce-motion) .white { background: rgb(255 255 255 / var(--veil-l, .7)); }
 }
 
 @layer motion {

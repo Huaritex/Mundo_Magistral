@@ -2,6 +2,23 @@ export type StageTier = 1 | 2 | 3;
 
 type Connection = { saveData?: boolean; effectiveType?: string };
 
+/** Firefox/Zen puede ocultar el modelo del GPU: detect-gpu devuelve FALLBACK tier 1 aunque WebGL 2 funcione. */
+function supportsLowPowerStage(): boolean {
+  try {
+    const gl = document.createElement('canvas').getContext('webgl2', {
+      failIfMajorPerformanceCaveat: true,
+      powerPreference: 'low-power',
+    });
+    if (!gl) return false;
+    const debug = gl.getExtension('WEBGL_debug_renderer_info');
+    const renderer = debug ? String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)) : '';
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return !/swiftshader|llvmpipe|softpipe|software|mesa offscreen/i.test(renderer);
+  } catch {
+    return false;
+  }
+}
+
 export function reducedMotion(): boolean {
   const url = new URL(location.href);
   if (url.searchParams.get('rm') === '1') return true;
@@ -23,6 +40,7 @@ export async function detectStageTier(): Promise<StageTier> {
   try {
     const { getGPUTier } = await import('detect-gpu');
     const gpu = await getGPUTier({ benchmarksURL: '/benchmarks' });
+    if (/\bGecko\//.test(navigator.userAgent) && gpu.type === 'FALLBACK' && gpu.tier === 1 && !gpu.isMobile && supportsLowPowerStage()) return 2;
     return gpu.tier >= 3 ? 3 : gpu.tier >= 2 ? 2 : 1;
   } catch {
     // A missing benchmark or blocked WebGL fails into the static poster route.

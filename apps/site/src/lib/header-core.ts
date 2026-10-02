@@ -20,6 +20,11 @@ export interface HeaderEnhancer {
 const CHAPTERS: Record<string, string> = {
   '/': 'hero',
   '/nosotros': 'historia',
+  '/quienes-somos': 'historia',
+  '/equipo': 'filosofia',
+  '/servicios': 'especialidades',
+  '/noticias': 'filosofia',
+  '/contacto': 'sedes',
   '/especialidades': 'especialidades',
   '/formas-farmaceuticas': 'formas',
   '/sucursales': 'sedes',

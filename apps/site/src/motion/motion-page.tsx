@@ -87,7 +87,7 @@ function useNavBridge(enabled: boolean) {
   }, [enabled]);
 }
 
-/** Tier 1 (póster) sin reduced motion: bucle de vídeo del hero, pausado con la pestaña oculta (staticRoute de lifecycle.ts). */
+/** Tier 1 sin reduced motion: bucle de vídeo de respaldo detrás de las secciones, pausado con la pestaña oculta. */
 function useHeroLoop(enabled: boolean, pathname: string) {
   useEffect(() => {
     if (!enabled) return;
@@ -113,7 +113,15 @@ export default function MotionPage({ scope }: { scope: RefObject<HTMLElement | n
   const mode = useMode();
   const path = normalizePath(pathname);
   const lastPath = useRef(path);
-  const pageAt = useRef(-Infinity); // -Infinity: la carga inicial no es "fresca" (el eyebrow ya se pintó antes del idle)
+  const pageAt = useRef(-Infinity); // La carga inicial no anima el hero después del idle.
+  const readyBeforeNavigation = useRef(false);
+  // Registrar la navegación incluso si el tier todavía está pendiente: evita una entrada tardía al pasar a light.
+  useLayoutEffect(() => {
+    if (lastPath.current === path) return;
+    lastPath.current = path;
+    readyBeforeNavigation.current = document.documentElement.dataset.gsapNavReady === '1';
+    pageAt.current = performance.now();
+  }, [path]);
 
   // Declarado antes que useGSAP (mismo commit): el scroll ya está arriba cuando se miden los ScrollTrigger.
   useLayoutEffect(() => resetScroll(key, hash), [key, hash]);
@@ -122,10 +130,17 @@ export default function MotionPage({ scope }: { scope: RefObject<HTMLElement | n
   useNavBridge(mode === 'full');
   useHeroLoop(mode === 'light', path);
 
+  // La navegación puede omitir el snapshot nativo del contenido cuando GSAP ya está listo para animar el nuevo DOM.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (mode !== 'off') root.dataset.gsapNavReady = '1';
+    else delete root.dataset.gsapNavReady;
+    return () => { delete root.dataset.gsapNavReady; };
+  }, [mode]);
+
   const { context } = useGSAP(() => {
     if (mode === 'off') return;
-    if (lastPath.current !== path) { lastPath.current = path; pageAt.current = performance.now(); }
-    return bindPage({ mode, path, fallbackChapter: chapterForPath(path), fresh: performance.now() - pageAt.current < 700 });
+    return bindPage({ mode, path, fallbackChapter: chapterForPath(path), fresh: readyBeforeNavigation.current && performance.now() - pageAt.current < 700 });
   }, { scope, dependencies: [path, mode], revertOnUpdate: true });
 
   // PageScope (Layout) revierte el contexto en su cleanup: los pins deben deshacerse ANTES de que React quite los nodos.

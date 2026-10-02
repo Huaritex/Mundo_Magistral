@@ -9,6 +9,21 @@
     <meta property="og:locale" content="es_BO" />
     <meta property="og:site_name" content="MundoMagistral" />
     <meta name="twitter:card" content="summary_large_image" />
+    <style>html[data-mm-intro-active='1'] { background: var(--mm-night, #22163a); }</style>
+    <script>
+      try {
+        var introParams = new URLSearchParams(location.search);
+        var introForce = '%MODE%' === 'development' && introParams.get('intro') === '1';
+        var introPreference = introParams.get('rm') || localStorage.getItem('mm-reduced-motion');
+        var introReduced = introPreference === '1' || (introPreference !== '0' && matchMedia('(prefers-reduced-motion: reduce)').matches);
+        if (location.pathname === '/' && !introReduced && (introForce || sessionStorage.getItem('mundo-magistral-intro-seen') !== '1')) {
+          document.documentElement.dataset.mmIntroActive = '1';
+          document.documentElement.dataset.mmIntroStarted = String(Date.now());
+        }
+        else document.documentElement.dataset.mmIntroSeen = '1';
+      } catch {}
+    </script>
+    <noscript><style>.intro-overlay { display: none !important; }</style></noscript>
   </head>
   <body>
     <div id="root"></div>
