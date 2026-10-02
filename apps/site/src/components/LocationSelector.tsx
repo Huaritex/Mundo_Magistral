@@ -19,7 +19,10 @@ export default function LocationSelector() {
         <h3>{sede.ciudad}</h3>
         <address>{sede.direccion}</address>
         <dl><div><dt>Teléfono</dt><dd><a href={`tel:${sede.tel}`}>{sede.telefono}</a></dd></div><div><dt>Lunes a viernes</dt><dd>{sede.lv}</dd></div><div><dt>Sábados</dt><dd>{sede.sab}</dd></div>{sede.email && <div><dt>Correo</dt><dd><a href={`mailto:${sede.email}`}>{sede.email}</a></dd></div>}</dl>
-        <Link className="text-link" to={`/sucursales/${sede.id}`}>Ver detalles <span aria-hidden="true">↗</span></Link>
+        <div className="internal-location-actions">
+          <a className="button button-outline-dark button-sm" href={sede.mapsUrl} target="_blank" rel="noopener noreferrer">Ver en Google Maps <span aria-hidden="true">↗</span></a>
+          <Link className="text-link" to={`/sucursales/${sede.id}`}>Ver detalles <span aria-hidden="true">↗</span></Link>
+        </div>
       </article>)}
     </div>
   </div>;

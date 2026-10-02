@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 
-export interface Sede { id: string; ciudad: string; departamento: string; nombre: string; direccion: string; telefono: string; tel: string; lv: string; sab: string; email?: string }
+export interface Sede { id: string; ciudad: string; departamento: string; nombre: string; direccion: string; telefono: string; tel: string; lv: string; sab: string; email?: string; mapsUrl: string }
 
 /**
  * Etiqueta de preparado de una sede: marco fino, esquina recta, dato pequeño. Ciudad, dirección, teléfono y horario
- * visibles sin hover. Los datos son VERIFICADOS (sedes.json); no hay WhatsApp por sede ni coordenadas (pendientes del cliente).
+ * visibles sin hover. Los enlaces de Google Maps de sedes.json fueron proporcionados por el cliente.
  * `large` = etiqueta de la página de detalle (la ciudad es el H1 de la página, no un enlace).
  */
 export default function SedeCard({ sede, large = false }: { sede: Sede; large?: boolean }) {
@@ -23,6 +23,7 @@ export default function SedeCard({ sede, large = false }: { sede: Sede; large?: 
         {large && sede.email && <div><dt>Correo</dt><dd><a href={`mailto:${sede.email}`}>{sede.email}</a></dd></div>}
       </dl>
       <div className="sede-tag-actions">
+        <a className="button button-outline-dark button-sm" href={sede.mapsUrl} target="_blank" rel="noopener noreferrer">Ver en Google Maps <span aria-hidden="true">↗</span></a>
         <Link className="button button-outline-dark button-sm" to={`/cotizar?sede=${sede.id}`}>Cotizar en esta sede</Link>
         {large && <a className="button button-outline-dark button-sm" href={`tel:${sede.tel}`}>Llamar</a>}
       </div>

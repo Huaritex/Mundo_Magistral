@@ -19,6 +19,7 @@ export function Component() {
     name: `Farmacia MundoMagistral — ${sede.ciudad} ${sede.nombre}`,
     address: { '@type': 'PostalAddress', streetAddress: sede.direccion, addressLocality: sede.ciudad, addressRegion: sede.departamento, addressCountry: 'BO' },
     telephone: sede.tel,
+    hasMap: sede.mapsUrl,
     openingHoursSpecification: [
       { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: sede.lv.split('–')[0], closes: sede.lv.split('–')[1] },
       { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Saturday', opens: sede.sab.split('–')[0], closes: sede.sab.split('–')[1] },
@@ -48,8 +49,6 @@ export function Component() {
           <h2 className="sticky-title">¿Cuándo y dónde te atendemos?</h2>
           <div className="sede-detail">
             <SedeCard sede={sede} large />
-            {/* Pendiente del cliente: coordenadas y WhatsApp por sede. No se inventan. */}
-            <p className="sede-note">La ubicación exacta para navegación se agregará cuando la sede confirme sus coordenadas.</p>
           </div>
         </div>
       </section>
